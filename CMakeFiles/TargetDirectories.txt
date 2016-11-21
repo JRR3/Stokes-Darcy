@@ -1,0 +1,8 @@
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/debug.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/distclean.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/info.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/release.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/run.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/runclean.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/sdd_simple_parallel.dir
+/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/strip_comments.dir

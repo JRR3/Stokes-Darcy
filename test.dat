@@ -1,0 +1,89 @@
+Darcy  fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
+Stokes fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
+Lambda fe: FE_Q<1,2>(2)
+Flux   fe: FE_DGQ<1,2>(0)
+Grad div         : 0
+CG LSQ eps       : 1e-06
+Darcy BC weak    : True
+Flux refinements : 2
+# workers        : 4
++++++Run S+D stationary rates ++++++++++ 
++++++Run S+D stationary rates ++++++++++ 
++++++Run S+D stationary rates ++++++++++ 
++++++Run S+D stationary rates ++++++++++ 
+>>>Setup Lambda dofs
+>>>Setup Flux dofs
+*******Porosity information********
+Number of active cells: 256
+   Number of degrees of freedom: 289
+*******Porosity information********
+Number of active cells: 256
+   Number of degrees of freedom: 289
+*******Porosity information********
+Number of active cells: 256
+   Number of degrees of freedom: 289
+*******Stokes information********
+Number of active cells: 256
+   Number of degrees of freedom: 2467 (401102888+11062)
+                   h           : 0.353553
+*******Darcy information********
+Number of active cells: 256
+   Number of degrees of freedom: 2467 (0+0)
+                   h           : 0.353553
+*******Porosity information********
+Number of active cells: 256
+   Number of degrees of freedom: 289
+*******Lambda information********
+Number of active cells: 16
+   Number of degrees of freedom: 33
+                   h           : 0.0625
+*******Flux information********
+Number of active cells: 64
+   Number of degrees of freedom: 64
+   flux_cell_measure           : 0.015625
+   i_sqrt_cell_measure         : 8
+*******Grand total********
+5320 dofs in the system.
+   Rebuilding Darcy preconditioner...
+The F norm of darcy prec is: 43.4943
+   Rebuilding Stokes preconditioner...
+
+****** CG LSQ ******
+Status before excecuting the CG algorithm
+>>>Darcy operator 
+   Solving Darcy system... 
+The FGMRES Darcy has terminated
+26 iterations.
+darcy rhs norm: 0.4245217897
+darcy sol norm: 139.9593029
+>>>Stokes operator
+   Solving Stokes system... 
+*********Aggresive solver***************
+33 iterations.
+Stokes rhs norm: 11.03895166
+Stokes sol norm: 83.59192118
+Safe exit from Darcy and Stokes operators
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      0.31s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Darcy assembly                  |         1 |    0.0188s |       6.1% |
+| Darcy build preconditioner      |         1 |    0.0704s |        23% |
+| Darcy grid                      |         1 |  0.000839s |      0.27% |
+| Darcy operator                  |         1 |    0.0508s |        16% |
+| Darcy setup dofs                |         1 |    0.0112s |       3.6% |
+| Darcy solver                    |         1 |    0.0473s |        15% |
+| Flux grid                       |         1 |   0.00021s |     0.068% |
+| Initialize maps                 |         1 |  0.000404s |      0.13% |
+| Lambda grid                     |         1 |  0.000201s |     0.065% |
+| N operator                      |         1 |     0.122s |        39% |
+| Stokes build preconditioner     |         1 |    0.0489s |        16% |
+| Stokes grid                     |         1 |   9.7e-05s |     0.031% |
+| Stokes operator                 |         1 |     0.071s |        23% |
+| Stokes setup dofs               |         1 |    0.0201s |       6.5% |
+| Stokes solver                   |         1 |    0.0584s |        19% |
++---------------------------------+-----------+------------+------------+
+

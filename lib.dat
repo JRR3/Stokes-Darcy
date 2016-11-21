@@ -1,0 +1,28 @@
+[100%] Switch CMAKE_BUILD_TYPE to Debug
+-- Autopilot invoked
+-- Run   $ make info  to print a detailed help message
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
+[ 10%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc: In member function ‘void dealii::MapLinker<dim, dim_T, spacedim>::determine_if_we_own_cells_on_the_interface()’:
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:45:31: error: ‘faces_per_cell’ was not declared in this scope
+   for(unsigned int f = 0; f < faces_per_cell; ++f)
+                               ^
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc: In instantiation of ‘void dealii::MapLinker<dim, dim_T, spacedim>::flux_integration_on_cell_subface(const DHIs&, const unsigned int&, const dealii::FEValues<dim_T, spacedim>&, const double&, const dealii::Vector<double>&, dealii::Vector<double>&) [with int dim = 2; int dim_T = 1; int spacedim = 2; dealii::MapLinker<dim, dim_T, spacedim>::DHIs = dealii::TriaActiveIterator<dealii::DoFCellAccessor<dealii::DoFHandler<2>, false> >]’:
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:523:16:   required from here
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘source_cell’ [-Wunused-parameter]
+ void MapLinker<dim, dim_T, spacedim>::
+      ^
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘source_face_no’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_fe_values’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘scaling’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_function’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_rhs’ [-Wunused-parameter]
+gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o] Error 1
+gmake[5]: *** [CMakeFiles/sdd_simple_parallel.dir/all] Error 2
+gmake[4]: *** [all] Error 2
+make[3]: *** [CMakeFiles/debug] Error 2
+make[2]: *** [CMakeFiles/debug.dir/all] Error 2
+make[1]: *** [CMakeFiles/debug.dir/rule] Error 2
+make: *** [debug] Error 2

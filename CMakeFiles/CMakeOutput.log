@@ -1,0 +1,297 @@
+The system is: Linux - 2.6.32-504.16.2.el6.x86_64 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /software/openmpi/1.6.4/bin/mpicc 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/2.8.12.2/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /software/openmpi/1.6.4/bin/mpicxx 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/2.8.12.2/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec1830185548/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec1830185548.dir/build.make CMakeFiles/cmTryCompileExec1830185548.dir/build
+gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1830185548.dir/testCCompiler.c.o
+/software/openmpi/1.6.4/bin/mpicc    -o CMakeFiles/cmTryCompileExec1830185548.dir/testCCompiler.c.o   -c /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTryCompileExec1830185548
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1830185548.dir/link.txt --verbose=1
+/software/openmpi/1.6.4/bin/mpicc       CMakeFiles/cmTryCompileExec1830185548.dir/testCCompiler.c.o  -o cmTryCompileExec1830185548 -rdynamic 
+gmake[1]: Leaving directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec4140747404/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec4140747404.dir/build.make CMakeFiles/cmTryCompileExec4140747404.dir/build
+gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o
+/software/openmpi/1.6.4/bin/mpicc    -o CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+Linking C executable cmTryCompileExec4140747404
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4140747404.dir/link.txt --verbose=1
+/software/openmpi/1.6.4/bin/mpicc     -v CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec4140747404 -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/software/gcc/4.8.1/bin/gcc
+COLLECT_LTO_WRAPPER=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/lto-wrapper
+Target: x86_64-redhat-linux-gnu
+Configured with: ./configure --prefix=/software/gcc/4.8.1 --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --enable-languages=c,c++,fortran --with-gmp=/software/gmp/4.3.2 --with-mpfr=/software/mpfr/2.4.2 --with-mpc=/software/mpc/0.8.1 --disable-libunwind-exceptions --enable-libgcj-multifile --build=x86_64-redhat-linux-gnu --disable-dssi
+Thread model: posix
+gcc version 4.8.1 (GCC) 
+COMPILER_PATH=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/
+LIBRARY_PATH=/software/gcc/4.8.1/lib64/../lib64/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/software/visit/2.9.2/2.9.2/linux-x86_64/lib/:/software/gcc/4.8.1/lib64/:/software/mpc/0.8.1/lib/:/software/mpfr/2.4.2/lib/:/software/gmp/4.3.2/lib/:/software/openmpi/1.6.4/lib/:/opt/orangefs/lib/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec4140747404' '-rdynamic' '-I' '/software/openmpi/1.6.4/include' '-pthread' '-L/software/openmpi/1.6.4/lib' '-mtune=generic' '-march=x86-64'
+ /software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2 --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec4140747404 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o -L/software/openmpi/1.6.4/lib -L/software/gcc/4.8.1/lib64/../lib64 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/software/visit/2.9.2/2.9.2/linux-x86_64/lib -L/software/gcc/4.8.1/lib64 -L/software/mpc/0.8.1/lib -L/software/mpfr/2.4.2/lib -L/software/gmp/4.3.2/lib -L/software/openmpi/1.6.4/lib -L/opt/orangefs/lib -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../.. CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o -lmpi -ldl -lm --export-dynamic -lrt -lnsl -lutil -lm -ldl -lgcc --as-needed -lgcc_s --no-as-needed -lpthread -lc -lgcc --as-needed -lgcc_s --no-as-needed /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o /usr/lib/../lib64/crtn.o
+gmake[1]: Leaving directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/gmake "cmTryCompileExec4140747404/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTryCompileExec4140747404.dir/build.make CMakeFiles/cmTryCompileExec4140747404.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building C object CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/software/openmpi/1.6.4/bin/mpicc    -o CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTryCompileExec4140747404]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4140747404.dir/link.txt --verbose=1]
+  ignore line: [/software/openmpi/1.6.4/bin/mpicc     -v CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec4140747404 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/software/gcc/4.8.1/bin/gcc]
+  ignore line: [COLLECT_LTO_WRAPPER=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/lto-wrapper]
+  ignore line: [Target: x86_64-redhat-linux-gnu]
+  ignore line: [Configured with: ./configure --prefix=/software/gcc/4.8.1 --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --enable-languages=c,c++,fortran --with-gmp=/software/gmp/4.3.2 --with-mpfr=/software/mpfr/2.4.2 --with-mpc=/software/mpc/0.8.1 --disable-libunwind-exceptions --enable-libgcj-multifile --build=x86_64-redhat-linux-gnu --disable-dssi]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.8.1 (GCC) ]
+  ignore line: [COMPILER_PATH=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/]
+  ignore line: [LIBRARY_PATH=/software/gcc/4.8.1/lib64/../lib64/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/software/visit/2.9.2/2.9.2/linux-x86_64/lib/:/software/gcc/4.8.1/lib64/:/software/mpc/0.8.1/lib/:/software/mpfr/2.4.2/lib/:/software/gmp/4.3.2/lib/:/software/openmpi/1.6.4/lib/:/opt/orangefs/lib/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec4140747404' '-rdynamic' '-I' '/software/openmpi/1.6.4/include' '-pthread' '-L/software/openmpi/1.6.4/lib' '-mtune=generic' '-march=x86-64']
+  link line: [ /software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2 --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec4140747404 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o -L/software/openmpi/1.6.4/lib -L/software/gcc/4.8.1/lib64/../lib64 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/software/visit/2.9.2/2.9.2/linux-x86_64/lib -L/software/gcc/4.8.1/lib64 -L/software/mpc/0.8.1/lib -L/software/mpfr/2.4.2/lib -L/software/gmp/4.3.2/lib -L/software/openmpi/1.6.4/lib -L/opt/orangefs/lib -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../.. CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o -lmpi -ldl -lm --export-dynamic -lrt -lnsl -lutil -lm -ldl -lgcc --as-needed -lgcc_s --no-as-needed -lpthread -lc -lgcc --as-needed -lgcc_s --no-as-needed /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o /usr/lib/../lib64/crtn.o]
+    arg [/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec4140747404] ==> ignore
+    arg [/usr/lib/../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/../lib64/crti.o] ==> ignore
+    arg [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o] ==> ignore
+    arg [-L/software/openmpi/1.6.4/lib] ==> dir [/software/openmpi/1.6.4/lib]
+    arg [-L/software/gcc/4.8.1/lib64/../lib64] ==> dir [/software/gcc/4.8.1/lib64/../lib64]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/software/visit/2.9.2/2.9.2/linux-x86_64/lib] ==> dir [/software/visit/2.9.2/2.9.2/linux-x86_64/lib]
+    arg [-L/software/gcc/4.8.1/lib64] ==> dir [/software/gcc/4.8.1/lib64]
+    arg [-L/software/mpc/0.8.1/lib] ==> dir [/software/mpc/0.8.1/lib]
+    arg [-L/software/mpfr/2.4.2/lib] ==> dir [/software/mpfr/2.4.2/lib]
+    arg [-L/software/gmp/4.3.2/lib] ==> dir [/software/gmp/4.3.2/lib]
+    arg [-L/software/openmpi/1.6.4/lib] ==> dir [/software/openmpi/1.6.4/lib]
+    arg [-L/opt/orangefs/lib] ==> dir [/opt/orangefs/lib]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..]
+    arg [CMakeFiles/cmTryCompileExec4140747404.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lmpi] ==> lib [mpi]
+    arg [-ldl] ==> lib [dl]
+    arg [-lm] ==> lib [m]
+    arg [--export-dynamic] ==> ignore
+    arg [-lrt] ==> lib [rt]
+    arg [-lnsl] ==> lib [nsl]
+    arg [-lutil] ==> lib [util]
+    arg [-lm] ==> lib [m]
+    arg [-ldl] ==> lib [dl]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lpthread] ==> lib [pthread]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o] ==> ignore
+    arg [/usr/lib/../lib64/crtn.o] ==> ignore
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  collapse library dir [/software/openmpi/1.6.4/lib] ==> [/software/openmpi/1.6.4/lib]
+  collapse library dir [/software/gcc/4.8.1/lib64/../lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1] ==> [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/software/visit/2.9.2/2.9.2/linux-x86_64/lib] ==> [/software/visit/2.9.2/2.9.2/linux-x86_64/lib]
+  collapse library dir [/software/gcc/4.8.1/lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/software/mpc/0.8.1/lib] ==> [/software/mpc/0.8.1/lib]
+  collapse library dir [/software/mpfr/2.4.2/lib] ==> [/software/mpfr/2.4.2/lib]
+  collapse library dir [/software/gmp/4.3.2/lib] ==> [/software/gmp/4.3.2/lib]
+  collapse library dir [/software/openmpi/1.6.4/lib] ==> [/software/openmpi/1.6.4/lib]
+  collapse library dir [/opt/orangefs/lib] ==> [/opt/orangefs/lib]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..] ==> [/software/gcc/4.8.1/lib]
+  implicit libs: [mpi;dl;m;rt;nsl;util;m;dl;pthread;c]
+  implicit dirs: [/software/openmpi/1.6.4/lib;/software/gcc/4.8.1/lib64;/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1;/lib64;/usr/lib64;/software/visit/2.9.2/2.9.2/linux-x86_64/lib;/software/mpc/0.8.1/lib;/software/mpfr/2.4.2/lib;/software/gmp/4.3.2/lib;/opt/orangefs/lib;/software/gcc/4.8.1/lib]
+  implicit fwks: []
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec267081277/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec267081277.dir/build.make CMakeFiles/cmTryCompileExec267081277.dir/build
+gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec267081277.dir/testCXXCompiler.cxx.o
+/software/openmpi/1.6.4/bin/mpicxx     -o CMakeFiles/cmTryCompileExec267081277.dir/testCXXCompiler.cxx.o -c /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTryCompileExec267081277
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec267081277.dir/link.txt --verbose=1
+/software/openmpi/1.6.4/bin/mpicxx        CMakeFiles/cmTryCompileExec267081277.dir/testCXXCompiler.cxx.o  -o cmTryCompileExec267081277 -rdynamic 
+gmake[1]: Leaving directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec3105578562/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec3105578562.dir/build.make CMakeFiles/cmTryCompileExec3105578562.dir/build
+gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o
+/software/openmpi/1.6.4/bin/mpicxx     -o CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTryCompileExec3105578562
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3105578562.dir/link.txt --verbose=1
+/software/openmpi/1.6.4/bin/mpicxx      -v CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec3105578562 -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/software/gcc/4.8.1/bin/g++
+COLLECT_LTO_WRAPPER=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/lto-wrapper
+Target: x86_64-redhat-linux-gnu
+Configured with: ./configure --prefix=/software/gcc/4.8.1 --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --enable-languages=c,c++,fortran --with-gmp=/software/gmp/4.3.2 --with-mpfr=/software/mpfr/2.4.2 --with-mpc=/software/mpc/0.8.1 --disable-libunwind-exceptions --enable-libgcj-multifile --build=x86_64-redhat-linux-gnu --disable-dssi
+Thread model: posix
+gcc version 4.8.1 (GCC) 
+COMPILER_PATH=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/
+LIBRARY_PATH=/software/gcc/4.8.1/lib64/../lib64/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/software/visit/2.9.2/2.9.2/linux-x86_64/lib/:/software/gcc/4.8.1/lib64/:/software/mpc/0.8.1/lib/:/software/mpfr/2.4.2/lib/:/software/gmp/4.3.2/lib/:/software/openmpi/1.6.4/lib/:/opt/orangefs/lib/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec3105578562' '-rdynamic' '-I' '/software/openmpi/1.6.4/include' '-pthread' '-L/software/openmpi/1.6.4/lib' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
+ /software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2 --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec3105578562 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o -L/software/openmpi/1.6.4/lib -L/software/gcc/4.8.1/lib64/../lib64 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/software/visit/2.9.2/2.9.2/linux-x86_64/lib -L/software/gcc/4.8.1/lib64 -L/software/mpc/0.8.1/lib -L/software/mpfr/2.4.2/lib -L/software/gmp/4.3.2/lib -L/software/openmpi/1.6.4/lib -L/opt/orangefs/lib -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../.. CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o -lmpi_cxx -lmpi -ldl --export-dynamic -lrt -lnsl -lutil -lm -ldl -lstdc++ -lm -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o /usr/lib/../lib64/crtn.o
+gmake[1]: Leaving directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/gmake "cmTryCompileExec3105578562/fast"]
+  ignore line: [/usr/bin/gmake -f CMakeFiles/cmTryCompileExec3105578562.dir/build.make CMakeFiles/cmTryCompileExec3105578562.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building CXX object CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/software/openmpi/1.6.4/bin/mpicxx     -o CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTryCompileExec3105578562]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3105578562.dir/link.txt --verbose=1]
+  ignore line: [/software/openmpi/1.6.4/bin/mpicxx      -v CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec3105578562 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/software/gcc/4.8.1/bin/g++]
+  ignore line: [COLLECT_LTO_WRAPPER=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/lto-wrapper]
+  ignore line: [Target: x86_64-redhat-linux-gnu]
+  ignore line: [Configured with: ./configure --prefix=/software/gcc/4.8.1 --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --enable-languages=c,c++,fortran --with-gmp=/software/gmp/4.3.2 --with-mpfr=/software/mpfr/2.4.2 --with-mpc=/software/mpc/0.8.1 --disable-libunwind-exceptions --enable-libgcj-multifile --build=x86_64-redhat-linux-gnu --disable-dssi]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.8.1 (GCC) ]
+  ignore line: [COMPILER_PATH=/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/]
+  ignore line: [LIBRARY_PATH=/software/gcc/4.8.1/lib64/../lib64/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/software/visit/2.9.2/2.9.2/linux-x86_64/lib/:/software/gcc/4.8.1/lib64/:/software/mpc/0.8.1/lib/:/software/mpfr/2.4.2/lib/:/software/gmp/4.3.2/lib/:/software/openmpi/1.6.4/lib/:/opt/orangefs/lib/:/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec3105578562' '-rdynamic' '-I' '/software/openmpi/1.6.4/include' '-pthread' '-L/software/openmpi/1.6.4/lib' '-shared-libgcc' '-mtune=generic' '-march=x86-64']
+  link line: [ /software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2 --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec3105578562 /usr/lib/../lib64/crt1.o /usr/lib/../lib64/crti.o /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o -L/software/openmpi/1.6.4/lib -L/software/gcc/4.8.1/lib64/../lib64 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1 -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/software/visit/2.9.2/2.9.2/linux-x86_64/lib -L/software/gcc/4.8.1/lib64 -L/software/mpc/0.8.1/lib -L/software/mpfr/2.4.2/lib -L/software/gmp/4.3.2/lib -L/software/openmpi/1.6.4/lib -L/opt/orangefs/lib -L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../.. CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o -lmpi_cxx -lmpi -ldl --export-dynamic -lrt -lnsl -lutil -lm -ldl -lstdc++ -lm -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o /usr/lib/../lib64/crtn.o]
+    arg [/software/gcc/4.8.1/libexec/gcc/x86_64-redhat-linux-gnu/4.8.1/collect2] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec3105578562] ==> ignore
+    arg [/usr/lib/../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/../lib64/crti.o] ==> ignore
+    arg [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtbegin.o] ==> ignore
+    arg [-L/software/openmpi/1.6.4/lib] ==> dir [/software/openmpi/1.6.4/lib]
+    arg [-L/software/gcc/4.8.1/lib64/../lib64] ==> dir [/software/gcc/4.8.1/lib64/../lib64]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/software/visit/2.9.2/2.9.2/linux-x86_64/lib] ==> dir [/software/visit/2.9.2/2.9.2/linux-x86_64/lib]
+    arg [-L/software/gcc/4.8.1/lib64] ==> dir [/software/gcc/4.8.1/lib64]
+    arg [-L/software/mpc/0.8.1/lib] ==> dir [/software/mpc/0.8.1/lib]
+    arg [-L/software/mpfr/2.4.2/lib] ==> dir [/software/mpfr/2.4.2/lib]
+    arg [-L/software/gmp/4.3.2/lib] ==> dir [/software/gmp/4.3.2/lib]
+    arg [-L/software/openmpi/1.6.4/lib] ==> dir [/software/openmpi/1.6.4/lib]
+    arg [-L/opt/orangefs/lib] ==> dir [/opt/orangefs/lib]
+    arg [-L/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..] ==> dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..]
+    arg [CMakeFiles/cmTryCompileExec3105578562.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lmpi_cxx] ==> lib [mpi_cxx]
+    arg [-lmpi] ==> lib [mpi]
+    arg [-ldl] ==> lib [dl]
+    arg [--export-dynamic] ==> ignore
+    arg [-lrt] ==> lib [rt]
+    arg [-lnsl] ==> lib [nsl]
+    arg [-lutil] ==> lib [util]
+    arg [-lm] ==> lib [m]
+    arg [-ldl] ==> lib [dl]
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lpthread] ==> lib [pthread]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/crtend.o] ==> ignore
+    arg [/usr/lib/../lib64/crtn.o] ==> ignore
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  collapse library dir [/software/openmpi/1.6.4/lib] ==> [/software/openmpi/1.6.4/lib]
+  collapse library dir [/software/gcc/4.8.1/lib64/../lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1] ==> [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../../../lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/software/visit/2.9.2/2.9.2/linux-x86_64/lib] ==> [/software/visit/2.9.2/2.9.2/linux-x86_64/lib]
+  collapse library dir [/software/gcc/4.8.1/lib64] ==> [/software/gcc/4.8.1/lib64]
+  collapse library dir [/software/mpc/0.8.1/lib] ==> [/software/mpc/0.8.1/lib]
+  collapse library dir [/software/mpfr/2.4.2/lib] ==> [/software/mpfr/2.4.2/lib]
+  collapse library dir [/software/gmp/4.3.2/lib] ==> [/software/gmp/4.3.2/lib]
+  collapse library dir [/software/openmpi/1.6.4/lib] ==> [/software/openmpi/1.6.4/lib]
+  collapse library dir [/opt/orangefs/lib] ==> [/opt/orangefs/lib]
+  collapse library dir [/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1/../../..] ==> [/software/gcc/4.8.1/lib]
+  implicit libs: [mpi_cxx;mpi;dl;rt;nsl;util;m;dl;stdc++;m;pthread;c]
+  implicit dirs: [/software/openmpi/1.6.4/lib;/software/gcc/4.8.1/lib64;/software/gcc/4.8.1/lib/gcc/x86_64-redhat-linux-gnu/4.8.1;/lib64;/usr/lib64;/software/visit/2.9.2/2.9.2/linux-x86_64/lib;/software/mpc/0.8.1/lib;/software/mpfr/2.4.2/lib;/software/gmp/4.3.2/lib;/opt/orangefs/lib;/software/gcc/4.8.1/lib]
+  implicit fwks: []
+
+
