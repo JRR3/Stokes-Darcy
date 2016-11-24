@@ -349,6 +349,30 @@ map_linker.cc.s:
 	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.s
 .PHONY : map_linker.cc.s
 
+mesh_data.o: mesh_data.cc.o
+.PHONY : mesh_data.o
+
+# target to build an object file
+mesh_data.cc.o:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o
+.PHONY : mesh_data.cc.o
+
+mesh_data.i: mesh_data.cc.i
+.PHONY : mesh_data.i
+
+# target to preprocess a source file
+mesh_data.cc.i:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.i
+.PHONY : mesh_data.cc.i
+
+mesh_data.s: mesh_data.cc.s
+.PHONY : mesh_data.s
+
+# target to generate assembly for a file
+mesh_data.cc.s:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.s
+.PHONY : mesh_data.cc.s
+
 my_l2_norm.o: my_l2_norm.cc.o
 .PHONY : my_l2_norm.o
 
@@ -372,6 +396,30 @@ my_l2_norm.s: my_l2_norm.cc.s
 my_l2_norm.cc.s:
 	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.s
 .PHONY : my_l2_norm.cc.s
+
+parallel_map_linker.o: parallel_map_linker.cc.o
+.PHONY : parallel_map_linker.o
+
+# target to build an object file
+parallel_map_linker.cc.o:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
+.PHONY : parallel_map_linker.cc.o
+
+parallel_map_linker.i: parallel_map_linker.cc.i
+.PHONY : parallel_map_linker.i
+
+# target to preprocess a source file
+parallel_map_linker.cc.i:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.i
+.PHONY : parallel_map_linker.cc.i
+
+parallel_map_linker.s: parallel_map_linker.cc.s
+.PHONY : parallel_map_linker.s
+
+# target to generate assembly for a file
+parallel_map_linker.cc.s:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.s
+.PHONY : parallel_map_linker.cc.s
 
 plot_i_data.o: plot_i_data.cc.o
 .PHONY : plot_i_data.o
@@ -479,9 +527,15 @@ help:
 	@echo "... map_linker.o"
 	@echo "... map_linker.i"
 	@echo "... map_linker.s"
+	@echo "... mesh_data.o"
+	@echo "... mesh_data.i"
+	@echo "... mesh_data.s"
 	@echo "... my_l2_norm.o"
 	@echo "... my_l2_norm.i"
 	@echo "... my_l2_norm.s"
+	@echo "... parallel_map_linker.o"
+	@echo "... parallel_map_linker.i"
+	@echo "... parallel_map_linker.s"
 	@echo "... plot_i_data.o"
 	@echo "... plot_i_data.i"
 	@echo "... plot_i_data.s"

@@ -125,6 +125,7 @@ DarcyExactSolution2<dim>::vector_value (const Point<dim> &p,
 
 //----------------------------------------------------------------
 template class DarcyExactSolution2<2>;
+template class DarcyExactSolution2<3>;
 //----------------------------------------------------------------
 
 DEAL_II_NAMESPACE_CLOSE

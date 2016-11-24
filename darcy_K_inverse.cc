@@ -20,6 +20,7 @@ KInverse<dim>::value_list (const std::vector<Point<dim> > &points,
 }
 //----------------------------------------------------------------
 template class KInverse<2>;
+template class KInverse<3>;
 //----------------------------------------------------------------
 DEAL_II_NAMESPACE_CLOSE
 //----------------------------------------------------------------

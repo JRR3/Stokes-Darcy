@@ -60,6 +60,8 @@ compute_norm(const DoFHandler<dim,spacedim> &dof_handler, const VEC &source, boo
 //---------------------------
 template class L2_norm <1,2>;
 template class L2_norm <2,2,BlockVector<double> >;
+template class L2_norm <2,3>;
+template class L2_norm <2,3,BlockVector<double> >;
 //---------------------------
 DEAL_II_NAMESPACE_CLOSE
 //---------------------------

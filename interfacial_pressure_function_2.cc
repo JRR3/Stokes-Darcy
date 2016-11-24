@@ -29,7 +29,9 @@ InterfacialPressureFunction2<dim>::value(const Point<dim> &point, const unsigned
   return (-sin(y)*exp(1) + cos(x)*exp(y) + y*y - 2*y + 1);
 }
 
+//----------------------------------------------------------------
 template class InterfacialPressureFunction2<2>;
+template class InterfacialPressureFunction2<3>;
 //----------------------------------------------------------------
 DEAL_II_NAMESPACE_CLOSE
 //----------------------------------------------------------------

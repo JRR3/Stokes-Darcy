@@ -34,6 +34,8 @@ darcy_K_inverse.cc
 #plot_data.cc
 plot_i_data.cc
 map_linker.cc
+parallel_map_linker.cc
+mesh_data.cc
 #generate_template_matrices.cc
 #local_averaging.cc
 my_l2_norm.cc

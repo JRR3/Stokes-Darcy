@@ -41,27 +41,27 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +489 sdd_simple_parallel.cc
-badd +32 CMakeLists.txt
+badd +21 sdd_simple_parallel.cc
+badd +41 CMakeLists.txt
 badd +188 ../step-22/step-22.cc
 badd +310 stokes_stationary.w
 badd +111 darcy_initialization.w
 badd +2254 ../step-43/step-43.cc
-badd +11 print_basic_stats.w
-badd +247 stokes_initialization.w
-badd +6 run_stationary.w
+badd +62 print_basic_stats.w
+badd +29 stokes_initialization.w
+badd +62 run_stationary.w
 badd +34 lambda_initialization.w
 badd +83 compute_flux.w
 badd +494 ../step-40/step-40.cc
-badd +13 flux_initialization.w
-badd +95 map_linker.cc
+badd +48 flux_initialization.w
+badd +504 map_linker.cc
 badd +35 cg_lsq.w
 badd +21 assemble_stokes_preconditioner.w
 badd +6 flux_function_2.cc
 badd +10 flux_function_2.h
-badd +223 darcy_stationary.w
+badd +218 darcy_stationary.w
 badd +23 build_stokes_preconditioner.w
-badd +28 map_linker.h
+badd +96 map_linker.h
 badd +16 convergence_rates.cc
 badd +2 convergence_rates.h
 badd +55 N_operators.w
@@ -76,19 +76,27 @@ badd +34 stokes_linear_solvers.w
 badd +92 darcy_simple_solver.w
 badd +50 darcy_solver.w
 badd +126 darcy_operator.w
-badd +77 assemble_darcy_preconditioner.w
+badd +13 assemble_darcy_preconditioner.w
 badd +61 darcy_linear_solvers.w
 badd +3 darcy_minres_solver.w
-badd +251 ../step-32/step-32.cc
+badd +3420 ../step-32/step-32.cc
 badd +174 ../step-55/step-55.cc
 badd +23 build_darcy_preconditioner.w
 badd +6 assemble_darcy_system.w
 badd +80 darcy_fgmres_solver.w
 badd +8 darcy_block_schur_preconditioner.w
+badd +61 parallel_map_linker.cc
+badd +53 parallel_map_linker.h
+badd +11 initialize_parallel_maps.w
+badd +15 mesh_data.h
+badd +46 mesh_data.cc
+badd +1 ../step-5/step-5.cc
+badd +1 ../step-4/step-4.cc
+badd +76 ../step-1/step-1.cc
 argglobal
 silent! argdel *
 argadd _workers
-edit darcy_stationary.w
+edit parallel_map_linker.cc
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -200,12 +208,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 218 - ((12 * winheight(0) + 17) / 35)
+let s:l = 182 - ((15 * winheight(0) + 17) / 35)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-218
-normal! 0
+182
+normal! 034|
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

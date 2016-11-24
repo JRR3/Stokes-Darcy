@@ -1,11 +1,11 @@
 //-------------------------------------------------------------
-template<int dim>
-void SD<dim>::create_stokes_grid()
+template<>
+void SD<2>::create_stokes_grid()
 {
     TimerOutput::Scope timer_section(computing_timer, "Stokes grid");
 
-    GridGenerator::hyper_rectangle (stokes_domain, Point<dim>(0,1), Point<dim>(1,2));
-    typename Triangulation<dim>::active_cell_iterator 
+    GridGenerator::hyper_rectangle (stokes_domain, Point<2>(0,1), Point<2>(1,2));
+    typename Triangulation<2>::active_cell_iterator 
       cell = stokes_domain.begin_active();
     cell->face(0)->set_boundary_id(wall_id);
     cell->face(1)->set_boundary_id(wall_id);
@@ -13,6 +13,22 @@ void SD<dim>::create_stokes_grid()
     cell->face(3)->set_boundary_id(wall_id);
 }
 //-------------------------------------------------------------
+//-------------------------------------------------------------
+template<>
+void SD<3>::create_stokes_grid()
+{
+    TimerOutput::Scope timer_section(computing_timer, "Stokes grid");
+
+    GridGenerator::hyper_rectangle (stokes_domain, Point<3>(0,0,1), Point<3>(1,1,2));
+    typename Triangulation<3>::active_cell_iterator cell = stokes_domain.begin_active();
+
+    cell->face(0)->set_boundary_id(wall_id);
+    cell->face(1)->set_boundary_id(wall_id);
+    cell->face(2)->set_boundary_id(wall_id);
+    cell->face(3)->set_boundary_id(wall_id);
+    cell->face(4)->set_boundary_id(interface_id);
+    cell->face(5)->set_boundary_id(wall_id);
+}
 //-------------------------------------------------------------
 template<int dim>
 void SD<dim>::create_stokes_zero_bc_constraints(IndexSet &stokes_relevant_set)

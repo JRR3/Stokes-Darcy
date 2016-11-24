@@ -17,8 +17,8 @@ void SD<dim>::run_lambda_stokes_darcy ()
   std::cout << "+++++Run S+D stationary rates ++++++++++ " << std::endl;
   create_darcy_grid();
   create_stokes_grid();
-  create_lambda_grid();
-  create_flux_grid();
+  //create_lambda_grid();
+  //create_flux_grid();
   refine_all(1);
 
 
@@ -53,20 +53,19 @@ void SD<dim>::run_lambda_stokes_darcy ()
     refine_all(3);
     setup_stokes_dofs();
     setup_darcy_dofs();
-    setup_lambda_dofs();
-    setup_flux_dofs();
+    //setup_lambda_dofs();
+    //setup_flux_dofs();
 
-    //************************fe_tests
-    //fe_tests();
-    //return;
+    //************************Initialize maps
 
-    //lambda_connection();
-    initialize_maps();
-    //connect_stokes_and_darcy_to_lambda();
+    //initialize_maps();
+    initialize_parallel_maps();
+    print_basic_stats();
+
+    return;
 
     //test_flux_connection();
     //interpolate_initial_data();
-    print_basic_stats();
 
     interpolate_interfacial_pressure();
 
@@ -152,8 +151,8 @@ void SD<dim>::refine_all (const unsigned int &refinements = 1)
 {
   stokes_domain.refine_global(refinements);
   darcy_domain. refine_global(refinements);
-  lambda_domain.refine_global(refinements);
-  flux_domain.  refine_global(refinements);
+  //lambda_domain.refine_global(refinements);
+  //flux_domain.  refine_global(refinements);
 
 }
 //-------------------------------------------------------------

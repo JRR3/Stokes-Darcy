@@ -349,6 +349,8 @@ void ConvergenceRates<dim, FF, V>::update_norms()
 //-------------------------------------------------------------------
 template class ConvergenceRates<2, StokesExactSolution2<2>, TrilinosWrappers::MPI::BlockVector >;
 template class ConvergenceRates<2, DarcyExactSolution2<2>,  TrilinosWrappers::MPI::BlockVector >;
+template class ConvergenceRates<3, StokesExactSolution2<3>, TrilinosWrappers::MPI::BlockVector >;
+template class ConvergenceRates<3, DarcyExactSolution2<3>,  TrilinosWrappers::MPI::BlockVector >;
 //-------------------------------------------------------------------
 DEAL_II_NAMESPACE_CLOSE
 //------------------------------------------------------------

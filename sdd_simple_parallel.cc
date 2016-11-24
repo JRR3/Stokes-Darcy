@@ -113,9 +113,11 @@
 //#include "plot_data.h"
 #include "plot_i_data.h"
 #include "map_linker.h"
+#include "parallel_map_linker.h"
 //#include "generate_template_matrices.h"
 //#include "local_averaging.h"
 #include "my_l2_norm.h"
+#include "mesh_data.h"
 //#include "cg_lsq_stats.h"
 
 // As in all programs, the namespace dealii is included:
@@ -159,6 +161,7 @@
     void update_old_vectors();
     void interpolate_initial_data();
     void initialize_maps();
+    void initialize_parallel_maps();
     void print_basic_stats();
 
     //------------------------------------------N_operators
@@ -208,8 +211,8 @@
     bool                 rebuild_stokes_zero_bc_preconditioner;
 
     parallel::distributed::Triangulation<dim>   stokes_domain;
-    FESystem<dim>        stokes_fe;
-    DoFHandler<dim>      stokes_dof_handler;
+    FESystem<dim>                               stokes_fe;
+    DoFHandler<dim>                             stokes_dof_handler;
 
     ConstraintMatrix     stokes_constraints;
     ConstraintMatrix     stokes_zero_bc_constraints;
@@ -225,6 +228,8 @@
 
     MapLinker<dim> stokes_flux_map;
     MapLinker<dim> stokes_lambda_map;
+
+    ParallelMapLinker<dim-1,dim> parallel_map;
 
     unsigned int n_u_s;
     unsigned int n_p_s;
@@ -296,7 +301,7 @@
     L2_norm<dim-1, dim> l2_norm_obj;
     //-------------------------------------------------CGStats
     //CGStats<dim-1,dim,Vector<double> > cg_stats;
-    //-------------------------------------------------Lambda_functions
+    //-------------------------------------------------Lambda functions
     void create_lambda_grid();
     void create_lambda_constraints();
     void setup_lambda_dofs ();
@@ -308,16 +313,21 @@
     void solve_lambda();
     //void connect_stokes_and_darcy_to_lambda();
     void extract_stokes_and_darcy_interface_values();
-    //-------------------------------------------------Lambda_data
-    const unsigned int       lambda_degree;
-    double                   lambda_cell_measure;
 
-    Triangulation<dim-1,dim> lambda_domain;
+    //-------------------------------------------------Lambda data
+    Triangulation<dim-1,dim>   lambda_domain;
+
+    const unsigned int       lambda_degree;
+    //double                   lambda_cell_measure;
+
     FE_Q<dim-1,dim>          lambda_fe;
     DoFHandler<dim-1,dim>    lambda_dof_handler;
 
-    Vector<double>           lambda_zero;
-    Vector<double>           lambda_vector;
+    TrilinosWrappers::MPI::Vector  lambda_vector;
+
+    IndexSet                 lambda_locally_owned_dofs; 
+    IndexSet                 lambda_locally_relevant_dofs;
+
 
     //-------------------------------------------------Flux_functions
     double compute_rho_flux_norm(const Vector<double> &rho_source, bool print);
@@ -333,16 +343,18 @@
                                       Vector<double> &lambda_target,
                            const MPI_BlockVector &stokes_source, 
                            const MPI_BlockVector &darcy_source);
+
     //-------------------------------------------------Flux_data
-    const unsigned int       flux_refinements;
-    Triangulation<dim-1,dim> flux_domain;
-    FE_DGQ<dim-1,dim>        flux_fe;
-    //FE_Q<dim-1,dim>       flux_fe;
+    Triangulation<dim-1,dim>   flux_domain;
+
+    const unsigned int    flux_refinements;
+    FE_DGQ<dim-1,dim>     flux_fe;
     DoFHandler<dim-1,dim> flux_dof_handler;
-    Vector<double>        flux_vector;
-    Vector<double>        flux_rhs;
-    Vector<double>        flux_solution;
-    Vector<double>        flux_interface;
+
+    TrilinosWrappers::MPI::Vector  flux_vector;
+
+    IndexSet              flux_locally_owned_dofs; 
+    IndexSet              flux_locally_relevant_dofs;
 
     const double          sqrt_delta;
     const double          cg_eps;
@@ -350,6 +362,7 @@
     double                flux_cell_measure;
     double                sqrt_flux_cell_measure;
     double                i_sqrt_flux_cell_measure;
+
     //------------------------------------------------Porosity data
     const unsigned int                   porosity_degree;
     FE_Q<dim>                            porosity_fe;
@@ -446,13 +459,15 @@
     //------------------------------------------L2_norm
     l2_norm_obj       (q_rule_degree),
     //------------------------------------------Lambda
+    //lambda_domain      (MPI_COMM_WORLD),
     lambda_degree      (2),
     lambda_fe          (lambda_degree),
-    lambda_dof_handler (lambda_domain),
+    //lambda_dof_handler (lambda_domain),
     //------------------------------------------Flux
+    //flux_domain      (MPI_COMM_WORLD),
     flux_refinements (2),
     flux_fe          (0),
-    flux_dof_handler (flux_domain),
+    //flux_dof_handler (flux_domain),
     //------------------------------------------
     sqrt_delta       (0),
     cg_eps           (1e-6),
@@ -468,8 +483,8 @@
     //-------------------------------------------------
     pcout << "Darcy  fe: " << darcy_fe.get_name() << std::endl;
     pcout << "Stokes fe: " << stokes_fe.get_name() << std::endl;
-    pcout << "Lambda fe: " << lambda_fe.get_name() << std::endl;
-    pcout << "Flux   fe: " << flux_fe.get_name() << std::endl;
+    //pcout << "Lambda fe: " << lambda_fe.get_name() << std::endl;
+    //pcout << "Flux   fe: " << flux_fe.get_name() << std::endl;
     //-------------------------------------------------
     pcout << "Grad div         : " << grad_div << std::endl;
     pcout << "CG LSQ eps       : " << cg_eps << std::endl;
@@ -498,11 +513,11 @@
   //---------------------------------------------
   //#include "domain_connection.w"
   //#include "flux_connection.w"
-  #include "compute_flux.w"
-  #include "flux_initialization.w"
+  //#include "compute_flux.w"
+  //#include "flux_initialization.w"
   //---------------------------------------------
-  #include "N_operators.w"
-  #include "cg_lsq.w"
+  //#include "N_operators.w"
+  //#include "cg_lsq.w"
   //---------------------------------------------
   #include "stokes_initialization.w"
   //#include "stokes_assembly.w"
@@ -521,17 +536,15 @@
   #include "build_darcy_preconditioner.w"
   #include "darcy_stationary.w"
   //-------------------------------------------------------------
-  #include "lambda_initialization.w"
-  //#include "lambda_assembly.w"
-  //#include "lambda_solver.w"
-  //#include "compute_lambda_norm.w"
+  //#include "lambda_initialization.w"
   //-------------------------------------------------------------
   //#include "error_norms.w"
   #include "print_basic_stats.w"
   //#include "plot_data_dealii.w"
   //-------------------------------------------------------------
   //#include "test_flux_communication.w"
-  #include "initialize_maps.w"
+  //#include "initialize_maps.w"
+  #include "initialize_parallel_maps.w"
   //-------------------------------------------------------------
   //#include "run_lambda_stokes_darcy.w"
   #include "run_stationary.w"

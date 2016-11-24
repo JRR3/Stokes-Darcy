@@ -1,12 +1,12 @@
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-template<int dim>
-void SD<dim>::create_darcy_grid()
+template<>
+void SD<2>::create_darcy_grid()
 {
     TimerOutput::Scope timer_section(computing_timer, "Darcy grid");
 
-    GridGenerator::hyper_rectangle (darcy_domain, Point<dim>(0,0), Point<dim>(1,1));
-    typename Triangulation<dim>::active_cell_iterator cell = darcy_domain.begin_active();
+    GridGenerator::hyper_rectangle (darcy_domain, Point<2>(0,0), Point<2>(1,1));
+    typename Triangulation<2>::active_cell_iterator cell = darcy_domain.begin_active();
     if(!darcy_bc_are_enforced_weakly)
     {
       cell->face(0)->set_boundary_id(1);
@@ -21,6 +21,24 @@ void SD<dim>::create_darcy_grid()
       cell->face(2)->set_boundary_id(wall_id);
       cell->face(3)->set_boundary_id(interface_id);
     }
+}
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+template<>
+void SD<3>::create_darcy_grid()
+{
+    TimerOutput::Scope timer_section(computing_timer, "Darcy grid");
+
+    GridGenerator::hyper_rectangle (darcy_domain, Point<3>(0,0,0), Point<3>(1,1,1));
+    typename Triangulation<3>::active_cell_iterator cell = darcy_domain.begin_active();
+
+    //Assume Darcy boundary conditions are enforced weakly
+    cell->face(0)->set_boundary_id(wall_id);
+    cell->face(1)->set_boundary_id(wall_id);
+    cell->face(2)->set_boundary_id(wall_id);
+    cell->face(3)->set_boundary_id(wall_id);
+    cell->face(4)->set_boundary_id(wall_id);
+    cell->face(5)->set_boundary_id(interface_id);
 }
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

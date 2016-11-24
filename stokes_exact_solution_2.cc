@@ -141,6 +141,7 @@ void StokesExactSolution2<dim>::get_gradient_list (const std::vector<Point<dim> 
 }
 ////------------------------------------------------------------Stokes
 template class StokesExactSolution2<2>;
+template class StokesExactSolution2<3>;
 ////------------------------------------------------------------Stokes
 DEAL_II_NAMESPACE_CLOSE
 //------------------------------------------------------------Stokes

@@ -11,8 +11,7 @@
 DEAL_II_NAMESPACE_OPEN
 //---------------------------
 template<int dim, int dim_T, int spacedim>
-MapLinker<dim, dim_T, spacedim>::MapLinker():
-owns_cells_on_the_interface( false )
+MapLinker<dim, dim_T, spacedim>::MapLinker()
 {
 }
 //---------------------------
@@ -28,50 +27,6 @@ void MapLinker<dim, dim_T, spacedim>::attach_source_dof_handler(const DoFHandler
   source_dof_handler   = &source;
   source_dofs_per_cell = source_dof_handler->get_fe().dofs_per_cell;
   source_dofs_per_face = source_dof_handler->get_fe().dofs_per_face;
-}
-//---------------------------
-template<int dim, int dim_T, int spacedim>
-void MapLinker<dim, dim_T, spacedim>::
-        determine_if_we_own_cells_on_the_interface()
-{
-  typename DoFHandler<dim, spacedim>::active_cell_iterator 
-    source_cell  = source_dof_handler->begin_active(),
-    source_ecell = source_dof_handler->end();
-
-  const unsigned int faces_per_cell = GeometryInfo<dim>::faces_per_cell;
-
-  for(;source_cell != source_ecell; ++source_cell)
-  if(source_cell->is_locally_owned())
-  if(source_cell->at_boundary())
-  for(unsigned int f = 0; f < faces_per_cell; ++f)
-  if(source_cell->face(f)->boundary_id() == interface_id)
-  {
-    owns_cells_on_the_interface = true;
-  }
-}
-//---------------------------
-template<int dim, int dim_T, int spacedim>
-void MapLinker<dim, dim_T, spacedim>::generate_local_domain()
-{
-  if( owns_cells_on_the_interface == false )
-    return;
-
-  typename DoFHandler<dim, spacedim>::active_cell_iterator 
-    source_cell  = source_dof_handler->begin_active(),
-    source_ecell = source_dof_handler->end();
-
-  std::ofstream out ("local_triangulation.inp");
-
-  const unsigned int faces_per_cell = GeometryInfo<dim>::faces_per_cell;
-
-  for(;source_cell != source_ecell; ++source_cell)
-  if(source_cell->is_locally_owned())
-  if(source_cell->at_boundary())
-  for(unsigned int f = 0; f < faces_per_cell; ++f)
-  if(source_cell->face(f)->boundary_id() == interface_id)
-  {
-    return;
-  }
 }
 //---------------------------
 template<int dim, int dim_T, int spacedim>
@@ -545,7 +500,7 @@ void MapLinker<dim, dim_T, spacedim>::test_mapping()
 }
 //------------------------------------------------------------
 template class MapLinker<2>;
-//template class MapLinker<3>;
+template class MapLinker<3>;
 //---------------------------
 DEAL_II_NAMESPACE_CLOSE
 //---------------------------

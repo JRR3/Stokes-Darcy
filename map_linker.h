@@ -37,7 +37,6 @@ class MapLinker
     std::vector<Point<dim_T> >              source_unit_face_q_points;
     unsigned int                            n_source_unit_face_q_points;
     unsigned int                            worker_id;
-    bool                                    owns_cells_on_the_interface;
 
   public:
     MapLinker();
@@ -91,8 +90,6 @@ class MapLinker
     const P_cell_face& operator[](const DHIt &target) ;
     void test_mapping();
 
-  private:
-    void determine_if_we_own_cells_on_the_interface();
 
 
 };

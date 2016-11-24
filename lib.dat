@@ -4,22 +4,52 @@
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
-[ 10%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc: In member function ‘void dealii::MapLinker<dim, dim_T, spacedim>::determine_if_we_own_cells_on_the_interface()’:
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:45:31: error: ‘faces_per_cell’ was not declared in this scope
-   for(unsigned int f = 0; f < faces_per_cell; ++f)
-                               ^
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc: In instantiation of ‘void dealii::MapLinker<dim, dim_T, spacedim>::flux_integration_on_cell_subface(const DHIs&, const unsigned int&, const dealii::FEValues<dim_T, spacedim>&, const double&, const dealii::Vector<double>&, dealii::Vector<double>&) [with int dim = 2; int dim_T = 1; int spacedim = 2; dealii::MapLinker<dim, dim_T, spacedim>::DHIs = dealii::TriaActiveIterator<dealii::DoFCellAccessor<dealii::DoFHandler<2>, false> >]’:
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:523:16:   required from here
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘source_cell’ [-Wunused-parameter]
- void MapLinker<dim, dim_T, spacedim>::
+[  8%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
+In file included from /home/javier/petsc-3.4.5/include/petscsys.h:1506:0,
+                 from /home/javier/petsc-3.4.5/include/petscbag.h:4,
+                 from /home/javier/petsc-3.4.5/include/petsc.h:5,
+                 from /home/javier/dealii-8.3.0/include/deal.II/fe/fe_values.h:46,
+                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:8:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector(dealii::ParallelMapLinker<dim, spacedim>::CellType&, std::vector<double>&) [with int dim = 1; int spacedim = 2]’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:330:16:   required from here
+/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
+  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
+                                                                                                            ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
+   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
+   ^
+/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
+  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
+                                                                                                            ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
+   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
+   ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:265:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
+ void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
       ^
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘source_face_no’ [-Wunused-parameter]
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_fe_values’ [-Wunused-parameter]
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘scaling’ [-Wunused-parameter]
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_function’ [-Wunused-parameter]
-/home/javier/dealii-8.3.0/examples/darcy_p/map_linker.cc:206:6: warning: unused parameter ‘target_rhs’ [-Wunused-parameter]
-gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o] Error 1
+In file included from /home/javier/petsc-3.4.5/include/petscsys.h:1506:0,
+                 from /home/javier/petsc-3.4.5/include/petscbag.h:4,
+                 from /home/javier/petsc-3.4.5/include/petsc.h:5,
+                 from /home/javier/dealii-8.3.0/include/deal.II/fe/fe_values.h:46,
+                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:8:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector(dealii::ParallelMapLinker<dim, spacedim>::CellType&, std::vector<double>&) [with int dim = 2; int spacedim = 3]’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:331:16:   required from here
+/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
+  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
+                                                                                                            ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
+   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
+   ^
+/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
+  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
+                                                                                                            ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
+   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
+   ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:265:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
+ void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
+      ^
+gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o] Error 1
 gmake[5]: *** [CMakeFiles/sdd_simple_parallel.dir/all] Error 2
 gmake[4]: *** [all] Error 2
 make[3]: *** [CMakeFiles/debug] Error 2

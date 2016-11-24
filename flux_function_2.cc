@@ -14,7 +14,9 @@ FluxFunction2<dim>:: vector_value (const Point<dim> &p,
   value[1] = -cos(y)*exp(1) + (y-1)*(y-1);
 }
 
+//----------------------------------------------------------------
 template class FluxFunction2<2>;
+template class FluxFunction2<3>;
 //----------------------------------------------------------------
 DEAL_II_NAMESPACE_CLOSE
 //----------------------------------------------------------------
