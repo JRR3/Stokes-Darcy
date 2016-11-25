@@ -51,7 +51,7 @@ include CMakeFiles/strip_comments.dir/progress.make
 CMakeFiles/strip_comments:
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "strip comments"
-	/usr/bin/perl -pi -e 's#^[ \t]*//.*\n##g;' convergence_rates.cc flux_function_2.cc stokes_exact_solution_2.cc interfacial_pressure_function_2.cc darcy_exact_solution_2.cc darcy_K_inverse.cc plot_i_data.cc map_linker.cc parallel_map_linker.cc mesh_data.cc my_l2_norm.cc sdd_simple_parallel.cc
+	/usr/bin/perl -pi -e 's#^[ \t]*//.*\n##g;' convergence_rates.cc flux_function_2.cc stokes_exact_solution_2.cc interfacial_pressure_function_2.cc darcy_exact_solution_2.cc darcy_K_inverse.cc plot_i_data.cc map_linker.cc parallel_map_linker.cc mesh_data.cc build_lambda_flux_p_maps.cc my_l2_norm.cc sdd_simple_parallel.cc
 
 strip_comments: CMakeFiles/strip_comments
 strip_comments: CMakeFiles/strip_comments.dir/build.make

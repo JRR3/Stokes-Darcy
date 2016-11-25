@@ -16,14 +16,18 @@ template<int dim, int spacedim>
 ParallelMapLinker<dim, spacedim>::ParallelMapLinker():
 worker_id ( Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ),
 n_workers ( Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) ),
-faces_per_cell ( GeometryInfo<spacedim>::faces_per_cell )
+faces_per_cell ( GeometryInfo<spacedim>::faces_per_cell ),
+//-----------------------------------------------------
+lambda_fe (2),
+lambda_dof_handler ( lambda_triangulation),
+flux_fe (0),
+flux_dof_handler ( flux_triangulation)
 {
   //Object requires no specific initialization
 }
 //---------------------------
 template<int dim, int spacedim>
-bool
-ParallelMapLinker<dim, spacedim>::Comparator::
+bool ParallelMapLinker<dim, spacedim>::Comparator::
         operator()(const Point<spacedim> &p1, const Point<spacedim> &p2) const
 {
   for(unsigned int i = 0; i < spacedim; ++i)
@@ -60,7 +64,11 @@ void ParallelMapLinker<dim, spacedim>::
 
   find_cells_on_the_interface();
   split_communication();
-  create_meshes();
+  initialize_source_dof_handler();
+  create_local_mesh();
+  setup_dofs();
+  build_maps();
+  compare_centers();
   //plot_triangulation();
 }
 //---------------------------
@@ -100,9 +108,12 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   MPI_Comm_rank(sd_comm, &rank);
   sd_worker_id = rank;
 
-  unsigned int min_rank;
-  unsigned int id = i_worker_id;
-  MPI_Allreduce(&id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, sd_comm);
+  //Number of workers in the other group
+  n_foreign_workers = n_interface_workers - n_sd_workers;
+
+  //unsigned int min_rank;
+  //unsigned int id = i_worker_id;
+  //MPI_Allreduce(&id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, sd_comm);
 
   if(i_worker_id < n_sd_workers)
     MPI_Intercomm_create(sd_comm, 0, interface_comm, n_sd_workers, 111, &intercomm);
@@ -112,18 +123,18 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   int flag;
   MPI_Comm_test_inter(intercomm, &flag);
   if (flag == false)
-    Assert(false, ExcNotImplemented());
+    Assert (false, ExcInternalError());
 
-  if(i_worker_id == 0)
-    std::cout << " Worker " << worker_id << " says: Flag is " << flag << std::endl;
+  //if(i_worker_id == 0)
+    //std::cout << " Worker " << worker_id << " says: Flag is " << flag << std::endl;
 
   int val=worker_id;
   std::vector<int> reci (2);
   MPI_Allgather(&val, 1, MPI_INT, &reci[0], 1, MPI_INT, intercomm);
 
-  for(unsigned int i = 0; i < reci.size(); ++i)
-    std::cout << "I am worker " << worker_id << " and reci["
-      << i << "]: " << reci[i] << std::endl;
+  //for(unsigned int i = 0; i < reci.size(); ++i)
+    //std::cout << "I am worker " << worker_id << " and reci["
+      //<< i << "]: " << reci[i] << std::endl;
 }
 //---------------------------
 //---------------------------
@@ -131,6 +142,8 @@ template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
 {
   owns_cells_on_the_interface = false;
+
+  unsigned int counter = 0;
 
   n_stokes_cells = 0;
 
@@ -144,6 +157,12 @@ void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
   for(unsigned int f = 0; f < faces_per_cell; ++f)
   if(stokes_cell->face(f)->boundary_id() == interface_id)
   {
+    //Point<spacedim> center = stokes_cell->face(f)->center();
+    //source_face_center_vec.push_back(center);
+    source_face_vec.push_back(f);
+    source_cell_num[stokes_cell] = counter;
+    ++counter;
+
     ++n_stokes_cells;
   }
 
@@ -161,9 +180,16 @@ void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
   for(unsigned int f = 0; f < faces_per_cell; ++f)
   if(darcy_cell->face(f)->boundary_id() == interface_id)
   {
+    //Point<spacedim> center = darcy_cell->face(f)->center();
+    //source_face_center_vec.push_back(center);
+    source_face_vec.push_back(f);
+    source_cell_num[darcy_cell] = counter;
+    ++counter;
+
     ++n_darcy_cells;
   }
 
+  //Initialize boolean variables
   owns_cells_on_stokes        = (n_stokes_cells > 0);
   owns_cells_on_darcy         = (n_darcy_cells > 0);
   owns_cells_on_the_interface = owns_cells_on_stokes || owns_cells_on_darcy;
@@ -174,38 +200,58 @@ void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
   //std::cout << "Worker " << worker_id << " owns " << n_darcy_cells << " darcy cells " << std::endl;
 
   if(owns_cells_on_both_domains)
+  {
+    std::cout << "Owns cells on both domains" << std::endl;
     Assert (false, ExcNotImplemented());
+  }
 
 
 }
-//---------------------------
+//--------------------------------------------------------
+//--------------------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::create_meshes()
+void ParallelMapLinker<dim, spacedim>::initialize_source_dof_handler()
 {
+  if(owns_cells_on_the_interface == false)
+    return;
+
   if(owns_cells_on_stokes)
-    create_local_mesh(stokes_dof_handler, 
-                      stokes_lambda_triangulation,
-                      stokes_flux_triangulation,
-                      stokes_center_vector,
-                      n_stokes_cells);
+  {
+    source_dof_handler = stokes_dof_handler;
+    n_cells = n_stokes_cells;
+    domain_type = Stokes;
+  } 
+
   if(owns_cells_on_darcy)
-    create_local_mesh(darcy_dof_handler, 
-                      darcy_lambda_triangulation,
-                      darcy_flux_triangulation,
-                      darcy_center_vector,
-                      n_darcy_cells);
+  {
+    source_dof_handler = darcy_dof_handler;
+    n_cells = n_darcy_cells;
+    domain_type = Darcy;
+  } 
+  
 }
 //--------------------------------------------------------
 //--------------------------------------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::setup_dofs()
+{
+  if(owns_cells_on_the_interface == false)
+    return;
+
+  lambda_dof_handler.distribute_dofs(lambda_fe);
+  lambda_vector.reinit (lambda_dof_handler.n_dofs());
+
+  flux_dof_handler.distribute_dofs(flux_fe);
+  flux_vector.reinit (flux_dof_handler.n_dofs());
+}
+//--------------------------------------------------------
 //--------------------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::create_local_mesh( 
-    const DoFHandler<spacedim> * source_dof_handler, 
-    Triangulation<dim, spacedim> &coarse_triangulation,
-    Triangulation<dim, spacedim> &fine_triangulation,
-    std::vector<double> &center_vector,
-    const unsigned int           &n_cells)
+void ParallelMapLinker<dim, spacedim>::create_local_mesh()
 {
+
+  if(owns_cells_on_the_interface == false)
+    return;
 
   typename DoFHandler<spacedim>::active_cell_iterator 
     source_cell  = source_dof_handler->begin_active(),
@@ -242,10 +288,10 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh(
     }
 
     //Extract the center from each face on the interface
-    //Note that we pass the point as contiguous elements
-    Point<spacedim> center = source_cell->face(f)->center();
-    for(unsigned int i = 0; i < spacedim; ++i)
-      center_vector.push_back(center[i]);
+    //Note that we pass the points as contiguous elements
+    //Point<spacedim> center = source_cell->face(f)->center();
+    //for(unsigned int i = 0; i < spacedim; ++i)
+      //center_vector.push_back(center[i]);
 
     //Specify the default material id
     cell_vector[cell_counter].material_id = 0;
@@ -261,35 +307,45 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh(
   //std::cout << "Worker " << worker_id << " says vertex counter: " << vertex_counter << std::endl;
   //std::cout << "Worker " << worker_id << " says cell   counter: " << cell_counter << std::endl;
 
-  coarse_triangulation.create_triangulation (point_vector, cell_vector, SubCellData());
-  fine_triangulation.copy_triangulation( coarse_triangulation );
-  fine_triangulation.refine_global( flux_refinements );
+  lambda_triangulation.create_triangulation (point_vector, cell_vector, SubCellData());
+  flux_triangulation.copy_triangulation( lambda_triangulation );
+  flux_triangulation.refine_global( flux_refinements );
+}//end_create_local_mesh
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::compare_centers()
+{
+  compare_target_centers(expanded_lambda_center_vec);
 }
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
-                      (CellType &cell_type,
-                       std::vector<double> &center_vector)
-                       
+void ParallelMapLinker<dim, spacedim>::compare_target_centers(std::vector<double> &center_vector)
 {
   if(owns_cells_on_the_interface == false)
     return;
 
-  std::vector<int> vector_size (n_interface_workers);
-  unsigned int size = center_vector.size();
-  //std::cout << " worker: " << worker_id << " has " << size << std::endl;
-  MPI_Allgather(&size, 1, MPI_UNSIGNED, &vector_size[0], 1, MPI_INT, interface_comm);
-  
-  std::vector<int> disp (n_interface_workers, 0);
-  for(unsigned int i = 1; i < n_interface_workers; ++i)
-    disp[i] = disp[i-1] + vector_size[i-1];
+  std::vector<int> in_size_vec (n_foreign_workers);
+  int my_vec_size = center_vector.size();
+  MPI_Allgather(&my_vec_size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, intercomm);
 
-  unsigned int total_size = std::accumulate(vector_size.begin(), vector_size.end(), 0);
+  //for(unsigned int i = 0; i < in_size_vec.size(); ++i)
+  //std::cout << " Worker: " << worker_id << " has " << in_size_vec[i] << std::endl;
+
+  //Displacement vector
+  std::vector<int> disp (n_foreign_workers, 0);
+  for(unsigned int i = 1; i < n_interface_workers; ++i)
+    disp[i] = disp[i-1] + in_size_vec[i-1];
+
+  //Incoming vector
+  unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
   std::vector<double> center_data (total_size);
 
-  MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
-      &center_data[0], &vector_size[0], &disp[0], MPI_DOUBLE, interface_comm);
+  MPI_Allgatherv(&center_vector[0], center_vector.size(), MPI_DOUBLE, 
+     &center_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
+
+  return;
 
   std::vector<std::vector<Point<spacedim> > > incoming_points (n_interface_workers);
   Point<spacedim> temp;
@@ -297,8 +353,8 @@ void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
 
   for(unsigned int i = 0; i < n_interface_workers; ++i)
   {
-    incoming_points[i].resize(vector_size[i]);
-    for(unsigned int j = 0; j < vector_size[i]; ++j)
+    incoming_points[i].resize(in_size_vec[i]);
+    for(unsigned int j = 0; j < in_size_vec[i]; ++j)
     {
       for(unsigned int k = 0; k < spacedim; ++k)
       {
@@ -347,7 +403,8 @@ template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::clear()
 {
   stokes_dof_handler = NULL;
-  darcy_dof_handler = NULL;
+  darcy_dof_handler  = NULL;
+  source_dof_handler = NULL;
 }
 //--------------------------------------------------------------
 //------------------------------------------------------------

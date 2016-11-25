@@ -5,6 +5,9 @@
 #include <deal.II/dofs/dof_accessor.h>
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/fe/component_mask.h>
+#include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_dgq.h>
+#include <deal.II/fe/fe_values.h>
 //---------------------------
 DEAL_II_NAMESPACE_OPEN
 //------------------------------------------------------------
@@ -16,24 +19,31 @@ template<int dim, int spacedim = dim+1>
 class ParallelMapLinker
 {
   private:
-    enum                              CellType {Stokes, Darcy};
+    enum                              DomainType {Darcy, Stokes};
+    DomainType                        domain_type;
     MPI_Comm                          interface_comm;
     MPI_Comm                          sd_comm;
     MPI_Comm                          intercomm;
     const DoFHandler<spacedim>        * stokes_dof_handler;
     const DoFHandler<spacedim>        * darcy_dof_handler;
+    const DoFHandler<spacedim>        * source_dof_handler;
+    //const DoFHandler<spacedim>        * target_dof_handler;
     unsigned int                      interface_id;
+    unsigned int                      dofs_per_cell;
+    unsigned int                      dofs_per_face;
     unsigned int                      stokes_dofs_per_cell;
     unsigned int                      stokes_dofs_per_face;
     unsigned int                      darcy_dofs_per_cell;
     unsigned int                      darcy_dofs_per_face;
+    unsigned int                      n_cells;
     unsigned int                      n_stokes_cells;
     unsigned int                      n_darcy_cells;
     unsigned int                      n_interface_workers;
-    unsigned int                      n_sd_workers;
     unsigned int                      flux_refinements;
     unsigned int                      i_worker_id;
     unsigned int                      sd_worker_id;
+    unsigned int                      n_sd_workers;
+    unsigned int                      n_foreign_workers;
     bool                              owns_cells_on_the_interface;
     bool                              owns_cells_on_both_domains;
     bool                              owns_cells_on_stokes;
@@ -41,17 +51,12 @@ class ParallelMapLinker
     const unsigned int                worker_id;
     const unsigned int                n_workers;
     const unsigned int                faces_per_cell;
-    Triangulation<dim,spacedim>       stokes_lambda_triangulation;
-    Triangulation<dim,spacedim>       stokes_flux_triangulation;
-    Triangulation<dim,spacedim>       darcy_lambda_triangulation;
-    Triangulation<dim,spacedim>       darcy_flux_triangulation;
-    std::vector<double>               stokes_center_vector;
-    std::vector<double>               darcy_center_vector;
+    Triangulation<dim,spacedim>       lambda_triangulation;
+    Triangulation<dim,spacedim>       flux_triangulation;
     struct Comparator
     {
       bool operator()(const Point<spacedim> &p1, const Point<spacedim> &p2) const;
     };
-    //std::map<Point<spacedim>, unsigned int, Comparator> map_point_to_num;
 
   public:
     ParallelMapLinker();
@@ -60,25 +65,50 @@ class ParallelMapLinker
                                    const DoFHandler<spacedim> &darcy,
                                    const unsigned int         &id,
                                    const unsigned int         &refinements);
-    //void attach_source_dof_handler(const DoFHandler<spacedim, spacedim> &source);
-    //void attach_target_dof_handler(const DoFHandler<dim, spacedim> &target);
-    //void set_boundary_indicator(const unsigned int &id);
+  private:
+    FE_Q<dim, spacedim>               lambda_fe;
+    DoFHandler<dim,spacedim>          lambda_dof_handler;
+    Vector<double>                    lambda_vector;
+
+    FE_DGQ<dim, spacedim>             flux_fe;
+    DoFHandler<dim,spacedim>          flux_dof_handler;
+    Vector<double>                    flux_vector;
+
+    std::vector<unsigned int>         source_face_vec;
+
+    typedef typename DoFHandler<spacedim>::active_cell_iterator      DHIs;
+    typedef typename DoFHandler<dim,spacedim>::active_cell_iterator  DHIt;
+    typedef std::map<DHIs,unsigned int>     M_source_cell_id;
+    typedef std::map<DHIt,unsigned int>     M_target_cell_id;
+    typedef std::pair<DHIs, unsigned int >  P_cell_face;
+    typedef std::map<Point<spacedim>, DHIt, Comparator> M_target_center_cell;
+    std::map<DHIs, std::vector<DHIt> >      source_to_lambda;
+    std::map<DHIs, std::vector<DHIt> >      source_to_flux;
+    std::map<DHIt, P_cell_face>             lambda_to_source;
+    std::map<DHIt, P_cell_face>             flux_to_source;
+    M_target_center_cell                    lambda_center_to_cell;
+    M_target_center_cell                    flux_center_to_cell;
+    M_source_cell_id                        source_cell_num;
+    std::vector<double>                     expanded_lambda_center_vec;
+    std::vector<double>                     expanded_flux_center_vec;
 
   private:
     void find_cells_on_the_interface();
-    void create_meshes();
-    void create_local_mesh( 
-          const DoFHandler<spacedim> * source_dof_handler, 
-          Triangulation<dim, spacedim> &coarse_triangulation,
-          Triangulation<dim, spacedim> &fine_triangulation,
-          std::vector<double>          &center_vector,
-          const unsigned int           &n_cells);
-    //void generate_local_domain();
-    void plot_triangulation();
     void split_communication();
-    void send_and_compare_center_vector
-                      (CellType &cell_type,
-                       std::vector<double> &center_vector);
+    void initialize_source_dof_handler();
+    void create_local_mesh();
+    void setup_dofs();
+    void create_maps();
+    void plot_triangulation();
+    void build_source_target_map(
+      const DoFHandler<dim, spacedim>         &target_dof_handler,
+      std::map<DHIs, std::vector<DHIt> >      &source_to_target,
+      std::map<DHIt, P_cell_face>             &target_to_source,
+      M_target_center_cell                    &target_center_to_cell,
+      std::vector<double>                     &expanded_target_center_vec);
+    void build_maps();
+    void compare_target_centers(std::vector<double> &center_vector);
+    void compare_centers();
 
 
 };

@@ -36,6 +36,7 @@ plot_i_data.cc
 map_linker.cc
 parallel_map_linker.cc
 mesh_data.cc
+build_lambda_flux_p_maps.cc
 #generate_template_matrices.cc
 #local_averaging.cc
 my_l2_norm.cc
