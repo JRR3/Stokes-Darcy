@@ -91,6 +91,9 @@ class ParallelMapLinker
     M_source_cell_id                        source_cell_num;
     std::vector<double>                     expanded_lambda_center_vec;
     std::vector<double>                     expanded_flux_center_vec;
+    std::vector<std::vector<DHIt> >         foreign_worker_owns_lambda_cells_vec;
+    std::vector<std::vector<DHIt> >         foreign_worker_owns_flux_cells_vec;
+
 
   private:
     void find_cells_on_the_interface();
@@ -107,7 +110,11 @@ class ParallelMapLinker
       M_target_center_cell                    &target_center_to_cell,
       std::vector<double>                     &expanded_target_center_vec);
     void build_maps();
-    void compare_target_centers(std::vector<double> &center_vector);
+    void compare_target_centers
+                      (std::vector<double>   &center_vector,
+                       M_target_center_cell  &target_center_to_cell,
+                       std::vector<std::vector<DHIt> > 
+                              &foreign_worker_owns_target_cells_vec);
     void compare_centers();
 
 

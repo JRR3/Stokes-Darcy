@@ -9,6 +9,8 @@ Flux refinements : 2
 +++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
+*******Lambda information********
+                   h           : 0.0625
 *******Stokes information********
 Number of active cells: 256
    Number of degrees of freedom: 2467
@@ -29,14 +31,14 @@ Number of active cells: 256
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |    0.0493s |            |
+| Total wallclock time elapsed since start    |    0.0513s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Darcy grid                      |         1 |  0.000904s |       1.8% |
-| Darcy setup dofs                |         1 |    0.0109s |        22% |
-| Initialize parallel maps        |         1 |   0.00133s |       2.7% |
-| Stokes grid                     |         1 |  9.18e-05s |      0.19% |
-| Stokes setup dofs               |         1 |    0.0198s |        40% |
+| Darcy grid                      |         1 |  0.000909s |       1.8% |
+| Darcy setup dofs                |         1 |    0.0117s |        23% |
+| Initialize parallel maps        |         1 |   0.00133s |       2.6% |
+| Stokes grid                     |         1 |   9.8e-05s |      0.19% |
+| Stokes setup dofs               |         1 |    0.0208s |        40% |
 +---------------------------------+-----------+------------+------------+
 
