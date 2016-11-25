@@ -1,6 +1,3 @@
-+++++Run S+D stationary rates ++++++++++ 
-+++++Run S+D stationary rates ++++++++++ 
-+++++Run S+D stationary rates ++++++++++ 
 Darcy  fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
 Stokes fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
 Grad div         : 0
@@ -9,15 +6,14 @@ Darcy BC weak    : True
 Flux refinements : 2
 # workers        : 4
 +++++Run S+D stationary rates ++++++++++ 
-Worker 0 owns 8 stokes cells 
-Worker 0 owns 0 darcy cells 
-# of Interface members: 4
-Worker 3 owns 0 stokes cells 
-Worker 3 owns 8 darcy cells 
-Worker 1 owns 8 stokes cells 
-Worker 1 owns 0 darcy cells 
-Worker 2 owns 0 stokes cells 
-Worker 2 owns 8 darcy cells 
++++++Run S+D stationary rates ++++++++++ 
++++++Run S+D stationary rates ++++++++++ 
++++++Run S+D stationary rates ++++++++++ 
+I am worker 3 and reci[0]: 0
+I am worker 3 and reci[1]: 1
+ Worker 0 says: Flag is 1
+I am worker 0 and reci[0]: 2
+I am worker 0 and reci[1]: 3
 *******Stokes information********
 Number of active cells: 256
    Number of degrees of freedom: 2467
@@ -35,17 +31,21 @@ Number of active cells: 256
 
 *******Grand total********
 5223 dofs in the system.
+I am worker 1 and reci[0]: 2
+I am worker 1 and reci[1]: 3
+I am worker 2 and reci[0]: 0
+I am worker 2 and reci[1]: 1
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |    0.0502s |            |
+| Total wallclock time elapsed since start    |    0.0482s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Darcy grid                      |         1 |  0.000879s |       1.7% |
-| Darcy setup dofs                |         1 |     0.012s |        24% |
-| Initialize parallel maps        |         1 |  0.000745s |       1.5% |
-| Stokes grid                     |         1 |   9.7e-05s |      0.19% |
-| Stokes setup dofs               |         1 |    0.0212s |        42% |
+| Darcy grid                      |         1 |  0.000895s |       1.9% |
+| Darcy setup dofs                |         1 |    0.0113s |        23% |
+| Initialize parallel maps        |         1 |  0.000923s |       1.9% |
+| Stokes grid                     |         1 |  9.61e-05s |       0.2% |
+| Stokes setup dofs               |         1 |    0.0197s |        41% |
 +---------------------------------+-----------+------------+------------+
 

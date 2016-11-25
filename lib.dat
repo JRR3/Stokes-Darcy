@@ -5,48 +5,24 @@
 -- Generating done
 -- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
 [  8%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
-In file included from /home/javier/petsc-3.4.5/include/petscsys.h:1506:0,
-                 from /home/javier/petsc-3.4.5/include/petscbag.h:4,
-                 from /home/javier/petsc-3.4.5/include/petsc.h:5,
-                 from /home/javier/dealii-8.3.0/include/deal.II/fe/fe_values.h:46,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:8:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::split_communication() [with int dim = 1; int spacedim = 2]’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:379:16:   required from here
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:95:80: error: invalid conversion from ‘const void*’ to ‘void*’ [-fpermissive]
+   MPI_Reduce(&worker_id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, 0, interface_comm);
+                                                                                ^
 /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector(dealii::ParallelMapLinker<dim, spacedim>::CellType&, std::vector<double>&) [with int dim = 1; int spacedim = 2]’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:330:16:   required from here
-/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
-  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
-                                                                                                            ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
-   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
-   ^
-/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
-  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
-                                                                                                            ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
-   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
-   ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:265:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:379:16:   required from here
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:296:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
  void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
       ^
-In file included from /home/javier/petsc-3.4.5/include/petscsys.h:1506:0,
-                 from /home/javier/petsc-3.4.5/include/petscbag.h:4,
-                 from /home/javier/petsc-3.4.5/include/petsc.h:5,
-                 from /home/javier/dealii-8.3.0/include/deal.II/fe/fe_values.h:46,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:8:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::split_communication() [with int dim = 2; int spacedim = 3]’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:380:16:   required from here
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:95:80: error: invalid conversion from ‘const void*’ to ‘void*’ [-fpermissive]
+   MPI_Reduce(&worker_id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, 0, interface_comm);
+                                                                                ^
 /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector(dealii::ParallelMapLinker<dim, spacedim>::CellType&, std::vector<double>&) [with int dim = 2; int spacedim = 3]’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:331:16:   required from here
-/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
-  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
-                                                                                                            ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
-   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
-   ^
-/home/javier/petsc-3.4.5/include/petsclog.h:376:108: error: invalid conversion from ‘__gnu_cxx::__alloc_traits<std::allocator<unsigned int> >::value_type* {aka unsigned int*}’ to ‘int*’ [-fpermissive]
-  ((petsc_gather_ct++,0) || MPI_Allgatherv(sendbuf,sendcount,sendtype,recvbuf,recvcount,displs,recvtype,comm))
-                                                                                                            ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:284:3: note: in expansion of macro ‘MPI_Allgatherv’
-   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
-   ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:265:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:380:16:   required from here
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:296:6: warning: unused parameter ‘cell_type’ [-Wunused-parameter]
  void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
       ^
 gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o] Error 1

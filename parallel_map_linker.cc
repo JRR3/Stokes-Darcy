@@ -67,61 +67,63 @@ void ParallelMapLinker<dim, spacedim>::
 template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::split_communication()
 {
-  int color = 0;
+  int color;
 
   if(owns_cells_on_the_interface == false)
     color = MPI_UNDEFINED;
+  else
+    color = 0;
 
   MPI_Comm_split(MPI_COMM_WORLD, color, worker_id, &interface_comm);
 
-  if(owns_cells_on_darcy)
-    color = 0;
-  else
+  if(owns_cells_on_the_interface == false)
     color = MPI_UNDEFINED;
-
-  MPI_Comm_split(interface_comm, color, worker_id, &darcy_comm);
-
-
-  if(owns_cells_on_stokes)
+  else if(owns_cells_on_darcy)
     color = 0;
+  else if(owns_cells_on_stokes)
+    color = 1;
+
+  MPI_Comm_split(interface_comm, color, worker_id, &sd_comm);
+
+
+  if(owns_cells_on_the_interface == false)
+    return;
+
+  int size,rank;
+  MPI_Comm_size(interface_comm, &size);
+  n_interface_workers = size;
+  MPI_Comm_rank(interface_comm, &rank);
+  i_worker_id = rank;
+
+  MPI_Comm_size(sd_comm, &size);
+  n_sd_workers = size;
+  MPI_Comm_rank(sd_comm, &rank);
+  sd_worker_id = rank;
+
+  unsigned int min_rank;
+  unsigned int id = i_worker_id;
+  MPI_Allreduce(&id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, sd_comm);
+
+  if(i_worker_id < n_sd_workers)
+    MPI_Intercomm_create(sd_comm, 0, interface_comm, n_sd_workers, 111, &intercomm);
   else
-    color = MPI_UNDEFINED;
+    MPI_Intercomm_create(sd_comm, 0, interface_comm, 0, 111, &intercomm);
 
-  MPI_Comm_split(interface_comm, color, worker_id, &stokes_comm);
+  int flag;
+  MPI_Comm_test_inter(intercomm, &flag);
+  if (flag == false)
+    Assert(false, ExcNotImplemented());
 
-  n_interface_workers = 0;
+  if(i_worker_id == 0)
+    std::cout << " Worker " << worker_id << " says: Flag is " << flag << std::endl;
 
-  if(owns_cells_on_the_interface == true)
-  {
-    int size;
-    MPI_Comm_size(interface_comm, &size);
-    n_interface_workers = size;
+  int val=worker_id;
+  std::vector<int> reci (2);
+  MPI_Allgather(&val, 1, MPI_INT, &reci[0], 1, MPI_INT, intercomm);
 
-    MPI_Comm_rank(interface_comm, &size);
-    i_worker_id = size;
-  }
-  
-  //if(owns_cells_on_darcy)
-  //{
-    //std::cout << "Worker " << worker_id << " is Darcy" << std::endl;
-    //int darcy_rank;
-    //MPI_Comm_size(darcy_comm, &darcy_rank);
-    //std::cout << "# of Darcy members: " << darcy_rank << std::endl;
-  //}
-  //
-  //if(owns_cells_on_stokes)
-  //{
-    //std::cout << "Worker " << worker_id << " is Stokes" << std::endl;
-    //int stokes_rank;
-    //MPI_Comm_size(stokes_comm, &stokes_rank);
-    //std::cout << "# of stokes members: " << stokes_rank << std::endl;
-  //}
-
-  if(worker_id == 0)
-  {
-    std::cout << "# of Interface members: " 
-      << Utilities::MPI::n_mpi_processes(interface_comm) << std::endl;
-  }
+  for(unsigned int i = 0; i < reci.size(); ++i)
+    std::cout << "I am worker " << worker_id << " and reci["
+      << i << "]: " << reci[i] << std::endl;
 }
 //---------------------------
 //---------------------------
@@ -168,8 +170,12 @@ void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
   owns_cells_on_both_domains  = owns_cells_on_stokes && owns_cells_on_darcy;
   
 
-  std::cout << "Worker " << worker_id << " owns " << n_stokes_cells << " stokes cells " << std::endl;
-  std::cout << "Worker " << worker_id << " owns " << n_darcy_cells << " darcy cells " << std::endl;
+  //std::cout << "Worker " << worker_id << " owns " << n_stokes_cells << " stokes cells " << std::endl;
+  //std::cout << "Worker " << worker_id << " owns " << n_darcy_cells << " darcy cells " << std::endl;
+
+  if(owns_cells_on_both_domains)
+    Assert (false, ExcNotImplemented());
+
 
 }
 //---------------------------
@@ -267,8 +273,8 @@ void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
                        std::vector<double> &center_vector)
                        
 {
-  //if(owns_cells_on_the_interface == false)
-    //return;
+  if(owns_cells_on_the_interface == false)
+    return;
 
   std::vector<int> vector_size (n_interface_workers);
   unsigned int size = center_vector.size();
@@ -285,8 +291,22 @@ void ParallelMapLinker<dim, spacedim>::send_and_compare_center_vector
   MPI_Allgatherv(&center_vector[0], vector_size[i_worker_id], MPI_DOUBLE, 
       &center_data[0], &vector_size[0], &disp[0], MPI_DOUBLE, interface_comm);
 
-  std::vector<Point<spacedim> > 
-  for(unsigned int i = 0; i < center_data.size(); i+=spacedim)
+  std::vector<std::vector<Point<spacedim> > > incoming_points (n_interface_workers);
+  Point<spacedim> temp;
+  unsigned int counter = 0;
+
+  for(unsigned int i = 0; i < n_interface_workers; ++i)
+  {
+    incoming_points[i].resize(vector_size[i]);
+    for(unsigned int j = 0; j < vector_size[i]; ++j)
+    {
+      for(unsigned int k = 0; k < spacedim; ++k)
+      {
+        temp[k] = center_data[counter++]; 
+      }
+      incoming_points[i][j] = temp;
+    }
+  }
 
 
 }

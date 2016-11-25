@@ -18,8 +18,8 @@ class ParallelMapLinker
   private:
     enum                              CellType {Stokes, Darcy};
     MPI_Comm                          interface_comm;
-    MPI_Comm                          stokes_comm;
-    MPI_Comm                          darcy_comm;
+    MPI_Comm                          sd_comm;
+    MPI_Comm                          intercomm;
     const DoFHandler<spacedim>        * stokes_dof_handler;
     const DoFHandler<spacedim>        * darcy_dof_handler;
     unsigned int                      interface_id;
@@ -30,8 +30,10 @@ class ParallelMapLinker
     unsigned int                      n_stokes_cells;
     unsigned int                      n_darcy_cells;
     unsigned int                      n_interface_workers;
+    unsigned int                      n_sd_workers;
     unsigned int                      flux_refinements;
     unsigned int                      i_worker_id;
+    unsigned int                      sd_worker_id;
     bool                              owns_cells_on_the_interface;
     bool                              owns_cells_on_both_domains;
     bool                              owns_cells_on_stokes;
