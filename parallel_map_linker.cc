@@ -370,30 +370,86 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
   unsigned int counter = 0;
   Point<spacedim> temp;
 
+  //From the point of view of a processor on a certain domain,
+  //he owns some cells on the boundary that have a corresponding
+  //neighboring cell owned by a different processor belonging
+  //to the other domain. Once we get the list of the degrees of 
+  //freedom owned by each foreign processor, we determine from
+  //which processor we expect to receive data. The list is ordered
+  //by the rank of each processor on the foreign group. Afterwards,
+  //we relate every dof that we own with a dof from the list of foreign
+  //processors. Since the dof numbering in one processor might be different
+  //to the numbering in the foreign processor, instead of sending 
+  //the dof numbering, we send the coordinates of the support points.
+  //This idea only works when the finite element space does indeed have
+  //the concept of support points. (This holds for the Lagrangian elements)
+  //The next step is to sort the support points so that both sender and
+  //receiver agree on the order of the degrees of freedom.
+  //
+  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
+                                       target_dof_handler, 
+                                       support_points);
+
   for(unsigned int i = 0; i < n_foreign_workers; ++i)
   {
     std::vector<unsigned int> temp_dof_vec;
+    std::vector<P_point_dof> temp_pairs;
+
     for(unsigned int j = 0; j < in_size_vec[i]; ++j)
     {
       for(unsigned int k = 0; k < spacedim; ++k)
       {
         temp[k] = incoming_data[counter++]; 
       }
+
       auto it = target_point_to_dof.find(temp);
       if( it != target_point_to_dof.end())
       if(is_taken[it->second] == false)
       {
-        temp_dof_vec.push_back(it->second);
+        P_point_dof pair (it->first, it->second);
+        temp_pairs.push_back(pair);
         is_taken[it->second] = true;
         //std::cout << "Worker " << worker_id << " says center " 
           //<< temp << " is his." << std::endl;
       }
-    }
+    }//end_elements_of_i-th_process
 
-    data_received_ordered_by_worker[i] = temp_dof_vec;
+    std::vector<P_point_dof> clone_temp_pairs ( temp_pairs );
+
+    //for(unsigned int p = 0; p < temp_pairs.size(); ++p)
+    //{
+      //if(worker_id == 0)
+        //std::cout << "--- Worker " << worker_id << " owns p("  << p << "): " 
+                  //<< "( " 
+                  //<< temp_pairs[p].second << " , "
+                  //<< temp_pairs[p].first 
+                  //<< ") " << std::endl;
+    //}
+
+    //We sort the elements of the temp_pairs vector by coordinate
+    //using a lambda expression. Note that we pass by reference.
+    std::sort(temp_pairs.begin(), temp_pairs.end(), 
+          [&](const P_point_dof &left, const P_point_dof &right) 
+          { return Comparator()(left.first, right.first);});
+
+    data_received_ordered_by_worker[i].resize(temp_pairs.size());
+    //The ordering becomes important in 3D.
+
+    //for(unsigned int p = 0; p < temp_pairs.size(); ++p)
+    //{
+      //if(worker_id == 0)
+      //if(temp_pairs[p].second != clone_temp_pairs[p].second)
+        //std::cout << "*** Worker " << worker_id << " says they are not equal " << std::endl;
+
+        //std::cout << "*** Worker " << worker_id << " owns p("  << p << "): " 
+                  //<< "( " 
+                  //<< temp_pairs[p].second << " , "
+                  //<< temp_pairs[p].first 
+                  //<< ") " << std::endl;
+    //}
+
   }//end_for_each_foreign_worker
-
-
 
 
 

@@ -4,14 +4,13 @@
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
+gmake[4]: Warning: File `Makefile' has modification time 0.087 s in the future
+gmake[5]: Warning: File `CMakeFiles/Makefile2' has modification time 0.083 s in the future
 [  7%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
 /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In member function ‘void dealii::ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs(const dealii::DoFHandler<dim, spacedim>&)’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:368:74: error: expected initializer before ‘.’ token
-   std::vector<std::vector<unsigned int> > data_received_ordered_by_worker.resize(n_foreign_workers);
-                                                                          ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:391:5: error: ‘data_received_ordered_by_worker’ was not declared in this scope
-     data_received_ordered_by_worker[i] = temp_dof_vec;
-     ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:425:19: error: expected primary-expression before ‘<<’ token
+                   << temp_pairs[p].second << " , "
+                   ^
 gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o] Error 1
 gmake[5]: *** [CMakeFiles/sdd_simple_parallel.dir/all] Error 2
 gmake[4]: *** [all] Error 2

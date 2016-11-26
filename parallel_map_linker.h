@@ -57,6 +57,7 @@ class ParallelMapLinker
     {
       bool operator()(const Point<spacedim> &p1, const Point<spacedim> &p2) const;
     };
+    typedef std::pair<Point<spacedim>,types::global_dof_index> P_point_dof;
 
   public:
     ParallelMapLinker();
