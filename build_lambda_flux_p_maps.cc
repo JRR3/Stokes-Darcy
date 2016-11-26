@@ -11,14 +11,14 @@ void ParallelMapLinker<dim, spacedim>::build_maps()
 {
   build_source_target_map(lambda_dof_handler, 
                           source_to_lambda, 
-                          lambda_to_source,
-                          lambda_center_to_cell,
-                          expanded_lambda_center_vec);
+                          lambda_to_source);
+                          //lambda_center_to_cell,
+                          //expanded_lambda_center_vec);
   build_source_target_map(flux_dof_handler, 
                           source_to_flux, 
-                          flux_to_source,
-                          flux_center_to_cell,
-                          expanded_flux_center_vec);
+                          flux_to_source);
+                          //flux_center_to_cell,
+                          //expanded_flux_center_vec);
 }
 //--------------------------------------------
 //--------------------------------------------
@@ -26,9 +26,9 @@ template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::build_source_target_map(
     const DoFHandler<dim, spacedim>         &target_dof_handler,
     std::map<DHIs, std::vector<DHIt> >      &source_to_target,
-    std::map<DHIt, P_cell_face>             &target_to_source,
-    M_target_center_cell                    &target_center_to_cell,
-    std::vector<double>                     &expanded_target_center_vec)
+    std::map<DHIt, P_cell_face>             &target_to_source)
+    //M_target_center_cell                    &target_center_to_cell,
+    //std::vector<double>                     &expanded_target_center_vec
 {
   typename DoFHandler<spacedim>::active_cell_iterator 
     source_cell  = source_dof_handler->begin_active(),
@@ -52,10 +52,10 @@ void ParallelMapLinker<dim, spacedim>::build_source_target_map(
     target_cell_num[target_cell] = counter;
     ++counter;
 
+    //target_center_to_cell[center] = target_cell;
     //Used in the parallel processing
-    target_center_to_cell[center] = target_cell;
-    for(unsigned int i = 0; i < spacedim; ++i)
-      expanded_target_center_vec.push_back(center[i]);
+    //for(unsigned int i = 0; i < spacedim; ++i)
+      //expanded_target_center_vec.push_back(center[i]);
   }
   //------------------------------------------
   //Here we build the maps (Source <-> Target)

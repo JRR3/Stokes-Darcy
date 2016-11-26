@@ -1,4 +1,3 @@
-+++++Run S+D stationary rates ++++++++++ 
 Darcy  fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
 Stokes fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
 Grad div         : 0
@@ -6,6 +5,7 @@ CG LSQ eps       : 1e-06
 Darcy BC weak    : True
 Flux refinements : 2
 # workers        : 4
++++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
@@ -31,14 +31,14 @@ Number of active cells: 256
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |    0.0513s |            |
+| Total wallclock time elapsed since start    |    0.0506s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Darcy grid                      |         1 |  0.000909s |       1.8% |
-| Darcy setup dofs                |         1 |    0.0117s |        23% |
-| Initialize parallel maps        |         1 |   0.00133s |       2.6% |
-| Stokes grid                     |         1 |   9.8e-05s |      0.19% |
-| Stokes setup dofs               |         1 |    0.0208s |        40% |
+| Darcy grid                      |         1 |  0.000934s |       1.8% |
+| Darcy setup dofs                |         1 |    0.0114s |        22% |
+| Initialize parallel maps        |         1 |   0.00159s |       3.1% |
+| Stokes grid                     |         1 |  0.000132s |      0.26% |
+| Stokes setup dofs               |         1 |    0.0204s |        40% |
 +---------------------------------+-----------+------------+------------+
 

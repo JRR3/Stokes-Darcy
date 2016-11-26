@@ -82,17 +82,18 @@ class ParallelMapLinker
     typedef std::map<DHIt,unsigned int>     M_target_cell_id;
     typedef std::pair<DHIs, unsigned int >  P_cell_face;
     typedef std::map<Point<spacedim>, DHIt, Comparator> M_target_center_cell;
+    typedef std::map<Point<spacedim>, types::global_dof_index, Comparator> M_point_dof;
     std::map<DHIs, std::vector<DHIt> >      source_to_lambda;
     std::map<DHIs, std::vector<DHIt> >      source_to_flux;
     std::map<DHIt, P_cell_face>             lambda_to_source;
     std::map<DHIt, P_cell_face>             flux_to_source;
-    M_target_center_cell                    lambda_center_to_cell;
-    M_target_center_cell                    flux_center_to_cell;
+    M_point_dof                             lambda_point_to_dof;
+    M_point_dof                             flux_point_to_dof;
     M_source_cell_id                        source_cell_num;
-    std::vector<double>                     expanded_lambda_center_vec;
-    std::vector<double>                     expanded_flux_center_vec;
-    std::vector<std::vector<DHIt> >         foreign_worker_owns_lambda_cells_vec;
-    std::vector<std::vector<DHIt> >         foreign_worker_owns_flux_cells_vec;
+    std::vector<double>                     expanded_lambda_dof_coord_vec;
+    std::vector<double>                     expanded_flux_dof_coord_vec;
+    //std::vector<std::vector<DHIt> >         foreign_worker_owns_lambda_cells_vec;
+    //std::vector<std::vector<DHIt> >         foreign_worker_owns_flux_cells_vec;
 
 
   private:
@@ -106,16 +107,10 @@ class ParallelMapLinker
     void build_source_target_map(
       const DoFHandler<dim, spacedim>         &target_dof_handler,
       std::map<DHIs, std::vector<DHIt> >      &source_to_target,
-      std::map<DHIt, P_cell_face>             &target_to_source,
-      M_target_center_cell                    &target_center_to_cell,
-      std::vector<double>                     &expanded_target_center_vec);
+      std::map<DHIt, P_cell_face>             &target_to_source);
     void build_maps();
-    void compare_target_centers
-                      (std::vector<double>   &center_vector,
-                       M_target_center_cell  &target_center_to_cell,
-                       std::vector<std::vector<DHIt> > 
-                              &foreign_worker_owns_target_cells_vec);
-    void compare_centers();
+    void relate_target_foreign_dofs(const DoFHandler<dim, spacedim>  &target_dof_handler);
+    void relate_foreign_dofs();
 
 
 };

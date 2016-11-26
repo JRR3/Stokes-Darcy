@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <fstream>
 #include <deal.II/lac/block_vector.h>
+#include <deal.II/fe/mapping_q1.h>
 #include <deal.II/grid/grid_tools.h>
 #include <deal.II/dofs/dof_tools.h>
 #include <deal.II/fe/fe_values.h>
@@ -68,7 +69,7 @@ void ParallelMapLinker<dim, spacedim>::
   create_local_mesh();
   setup_dofs();
   build_maps();
-  compare_centers();
+  relate_foreign_dofs();
   //plot_triangulation();
 }
 //---------------------------
@@ -315,29 +316,36 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh()
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::compare_centers()
-{
-  compare_target_centers(expanded_lambda_center_vec, 
-                         lambda_center_to_cell,
-                         foreign_worker_owns_lambda_cells_vec);
-  compare_target_centers(expanded_flux_center_vec, 
-                         flux_center_to_cell,
-                         foreign_worker_owns_flux_cells_vec);
+void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs()
+{ 
+  relate_target_foreign_dofs (lambda_dof_handler);
 }
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::compare_target_centers
-                      (std::vector<double>   &center_vector,
-                       M_target_center_cell  &target_center_to_cell,
-                       std::vector<std::vector<DHIt> >      
-                              &foreign_worker_owns_target_cells_vec)
+void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
+                       const DoFHandler<dim, spacedim>  &target_dof_handler)
 {
   if(owns_cells_on_the_interface == false)
     return;
 
+  M_point_dof  target_point_to_dof;
+  DoFTools::map_support_points_to_dofs(MappingQ1<dim,spacedim>(),
+                         target_dof_handler, target_point_to_dof);
+
+  //if(worker_id == 0)
+    //std::cout << "Size of xpand: " << expanded_dof_coord_vec.size() << std::endl;
+
+  std::vector<double> expanded_dof_coord_vec (spacedim * target_point_to_dof.size());
+  unsigned int count = 0;
+
+  //Expand vector
+  for(auto const &it : target_point_to_dof)
+  for(unsigned int i = 0; i < spacedim; ++i)
+    expanded_dof_coord_vec[count++] = it.first[i];
+
   std::vector<int> in_size_vec (n_foreign_workers);
-  int my_vec_size = center_vector.size();
+  int my_vec_size = expanded_dof_coord_vec.size();
   MPI_Allgather(&my_vec_size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, intercomm);
 
   //for(unsigned int i = 0; i < in_size_vec.size(); ++i)
@@ -350,37 +358,41 @@ void ParallelMapLinker<dim, spacedim>::compare_target_centers
 
   //Incoming vector
   unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
-  std::vector<double> center_data (total_size);
+  std::vector<double> incoming_data (total_size);
 
   //Transmission
-  MPI_Allgatherv(&center_vector[0], center_vector.size(), MPI_DOUBLE, 
-     &center_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
+  MPI_Allgatherv(&expanded_dof_coord_vec[0], expanded_dof_coord_vec.size(), MPI_DOUBLE, 
+     &incoming_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
 
-  //Resize vector
-  foreign_worker_owns_target_cells_vec.resize(n_foreign_workers);
-  Point<spacedim> temp;
+  std::vector<bool> is_taken (target_dof_handler.n_dofs(), false);
+  std::vector<std::vector<unsigned int> > data_received_ordered_by_worker (n_foreign_workers);
+
   unsigned int counter = 0;
+  Point<spacedim> temp;
 
   for(unsigned int i = 0; i < n_foreign_workers; ++i)
   {
-    std::vector<DHIt> temp_cell_vec;
+    std::vector<unsigned int> temp_dof_vec;
     for(unsigned int j = 0; j < in_size_vec[i]; ++j)
     {
       for(unsigned int k = 0; k < spacedim; ++k)
       {
-        temp[k] = center_data[counter++]; 
+        temp[k] = incoming_data[counter++]; 
       }
-      auto it = target_center_to_cell.find(temp);
-      if( it != target_center_to_cell.end())
+      auto it = target_point_to_dof.find(temp);
+      if( it != target_point_to_dof.end())
+      if(is_taken[it->second] == false)
       {
-        temp_cell_vec.push_back(it->second);
+        temp_dof_vec.push_back(it->second);
+        is_taken[it->second] = true;
         //std::cout << "Worker " << worker_id << " says center " 
           //<< temp << " is his." << std::endl;
       }
     }
 
-    foreign_worker_owns_target_cells_vec[i] = temp_cell_vec;
+    data_received_ordered_by_worker[i] = temp_dof_vec;
   }//end_for_each_foreign_worker
+
 
 
 
