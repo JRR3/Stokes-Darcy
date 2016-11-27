@@ -88,13 +88,13 @@ class ParallelMapLinker
     std::map<DHIs, std::vector<DHIt> >      source_to_flux;
     std::map<DHIt, P_cell_face>             lambda_to_source;
     std::map<DHIt, P_cell_face>             flux_to_source;
-    M_point_dof                             lambda_point_to_dof;
-    M_point_dof                             flux_point_to_dof;
     M_source_cell_id                        source_cell_num;
-    std::vector<double>                     expanded_lambda_dof_coord_vec;
-    std::vector<double>                     expanded_flux_dof_coord_vec;
-    //std::vector<std::vector<DHIt> >         foreign_worker_owns_lambda_cells_vec;
-    //std::vector<std::vector<DHIt> >         foreign_worker_owns_flux_cells_vec;
+    std::vector<unsigned int>               lambda_send_size_indexed_by_worker;
+    std::vector<unsigned int>               flux_send_size_indexed_by_worker;
+    std::vector<unsigned int>               lambda_dof_vec;
+    std::vector<unsigned int>               flux_dof_vec;
+    std::vector<unsigned int>               lambda_disp;
+    std::vector<unsigned int>               flux_disp;
 
 
   private:
@@ -110,8 +110,13 @@ class ParallelMapLinker
       std::map<DHIs, std::vector<DHIt> >      &source_to_target,
       std::map<DHIt, P_cell_face>             &target_to_source);
     void build_maps();
-    void relate_target_foreign_dofs(const DoFHandler<dim, spacedim>  &target_dof_handler);
+    double point_to_double(const Point<spacedim> &p);
+    void relate_target_foreign_dofs (
+           const DoFHandler<dim, spacedim>  &target_dof_handler,
+           std::vector<unsigned int> &send_size_indexed_by_worker,
+           std::vector<unsigned int> &target_dof_vec);
     void relate_foreign_dofs();
+    void test_communication();
 
 
 };

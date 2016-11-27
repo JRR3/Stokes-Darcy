@@ -318,13 +318,39 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh()
 template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs()
 { 
-  relate_target_foreign_dofs (lambda_dof_handler);
+  relate_target_foreign_dofs (lambda_dof_handler,
+                              lambda_send_size_indexed_by_worker,
+                              lambda_dof_vec);
+  relate_target_foreign_dofs (flux_dof_handler,
+                              flux_send_size_indexed_by_worker,
+                              flux_dof_vec);
+}
+//--------------------------------------------
+//--------------------------------------------
+template<>
+double ParallelMapLinker<1, 2>::point_to_double (const Point<2> &p)
+{
+  double x = p[0];
+  double y = p[1];
+  return exp(x) + sin(y) + 0.5;
+}
+//--------------------------------------------
+//--------------------------------------------
+template<>
+double ParallelMapLinker<2, 3>::point_to_double (const Point<3> &p)
+{
+  double x = p[0];
+  double y = p[1];
+  double z = p[2];
+  return exp(x) + sin(y) + sqrt(z) - 0.5;
 }
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
-                       const DoFHandler<dim, spacedim>  &target_dof_handler)
+                       const DoFHandler<dim, spacedim>  &target_dof_handler,
+                       std::vector<unsigned int> &send_size_indexed_by_worker,
+                       std::vector<unsigned int> &target_dof_vec) 
 {
   if(owns_cells_on_the_interface == false)
     return;
@@ -365,9 +391,11 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
      &incoming_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
 
   std::vector<bool> is_taken (target_dof_handler.n_dofs(), false);
-  std::vector<std::vector<unsigned int> > data_received_ordered_by_worker (n_foreign_workers);
+  send_size_indexed_by_worker.resize ( n_foreign_workers );
+  target_dof_vec.resize( target_dof_handler.n_dofs() );
 
-  unsigned int counter = 0;
+  unsigned int point_counter = 0;
+  unsigned int dof_counter = 0;
   Point<spacedim> temp;
 
   //From the point of view of a processor on a certain domain,
@@ -400,7 +428,7 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
     {
       for(unsigned int k = 0; k < spacedim; ++k)
       {
-        temp[k] = incoming_data[counter++]; 
+        temp[k] = incoming_data[point_counter++]; 
       }
 
       auto it = target_point_to_dof.find(temp);
@@ -410,22 +438,8 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
         P_point_dof pair (it->first, it->second);
         temp_pairs.push_back(pair);
         is_taken[it->second] = true;
-        //std::cout << "Worker " << worker_id << " says center " 
-          //<< temp << " is his." << std::endl;
       }
     }//end_elements_of_i-th_process
-
-    std::vector<P_point_dof> clone_temp_pairs ( temp_pairs );
-
-    //for(unsigned int p = 0; p < temp_pairs.size(); ++p)
-    //{
-      //if(worker_id == 0)
-        //std::cout << "--- Worker " << worker_id << " owns p("  << p << "): " 
-                  //<< "( " 
-                  //<< temp_pairs[p].second << " , "
-                  //<< temp_pairs[p].first 
-                  //<< ") " << std::endl;
-    //}
 
     //We sort the elements of the temp_pairs vector by coordinate
     //using a lambda expression. Note that we pass by reference.
@@ -433,25 +447,22 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
           [&](const P_point_dof &left, const P_point_dof &right) 
           { return Comparator()(left.first, right.first);});
 
-    data_received_ordered_by_worker[i].resize(temp_pairs.size());
-    //The ordering becomes important in 3D.
+    send_size_indexed_by_worker[i] = temp_pairs.size();
 
-    //for(unsigned int p = 0; p < temp_pairs.size(); ++p)
-    //{
-      //if(worker_id == 0)
-      //if(temp_pairs[p].second != clone_temp_pairs[p].second)
-        //std::cout << "*** Worker " << worker_id << " says they are not equal " << std::endl;
-
-        //std::cout << "*** Worker " << worker_id << " owns p("  << p << "): " 
-                  //<< "( " 
-                  //<< temp_pairs[p].second << " , "
-                  //<< temp_pairs[p].first 
-                  //<< ") " << std::endl;
-    //}
-
+    for(const auto &val : temp_pairs)
+      target_dof_vec[dof_counter++] = val.second;
   }//end_for_each_foreign_worker
 
+  //Test communication
+  std::vector<double> data (target_dof_handler.n_dofs());
+  std::transform (support_points.begin(), support_points.end(), 
+                  data.begin(), 
+                  [&](Point<spacedim> &p)->double {return this->point_to_double(p);});
+ 
+  std::vector<double> data_to_send (data);
 
+  for(unsigned int i = 0; i < target_dof_handler.n_dofs(); ++i)
+    data_to_send[i] = data[ target_dof_vec[i] ];
 
 }//end_compare_target_centers
 //--------------------------------------------
