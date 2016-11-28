@@ -14,17 +14,30 @@
 DEAL_II_NAMESPACE_OPEN
 //---------------------------
 template<int dim, int spacedim>
-ParallelMapLinker<dim, spacedim>::ParallelMapLinker():
-worker_id ( Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ),
-n_workers ( Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) ),
-faces_per_cell ( GeometryInfo<spacedim>::faces_per_cell ),
-//-----------------------------------------------------
-lambda_fe (2),
-lambda_dof_handler ( lambda_triangulation),
-flux_fe (0),
-flux_dof_handler ( flux_triangulation)
+ParallelMapLinker<dim, spacedim>::ParallelMapLinker()
+{}
+//---------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::reinit(
+    const DoFHandler<spacedim> &stokes,
+    const DoFHandler<spacedim> &darcy,
+    const FiniteElement<dim,spacedim> &fe,
+    const unsigned int         &id,
+    const unsigned int         &refinements)
 {
-  //Object requires no specific initialization
+  stokes_dof_handler = &stokes;
+  darcy_dof_handler  = &darcy;
+  target_fe          = &fe;
+  interface_id       = id;
+  n_refinements      = refinements;
+
+  find_cells_on_the_interface();
+  initialize_source_dof_handler();
+  split_communication();
+  create_local_mesh();
+  setup_dofs();
+  build_source_target_map();
+  relate_foreign_dofs();
 }
 //---------------------------
 template<int dim, int spacedim>
@@ -45,37 +58,18 @@ bool ParallelMapLinker<dim, spacedim>::Comparator::
   return false;
 }
 //---------------------------
-template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::
-     attach_relevant_objects(  const DoFHandler<spacedim> &stokes,
-                               const DoFHandler<spacedim> &darcy,
-                               const unsigned int         &id,
-                               const unsigned int         &refinements)
-{
-  stokes_dof_handler   = &stokes;
-  stokes_dofs_per_cell = stokes_dof_handler->get_fe().dofs_per_cell;
-  stokes_dofs_per_face = stokes_dof_handler->get_fe().dofs_per_face;
-  //target_dof_handler   = &target;
-  darcy_dof_handler   = &darcy;
-  darcy_dofs_per_cell = darcy_dof_handler->get_fe().dofs_per_cell;
-  darcy_dofs_per_face = darcy_dof_handler->get_fe().dofs_per_face;
-  //target_dofs_per_cell = target_dof_handler->get_fe().dofs_per_cell;
-  interface_id         = id;
-  flux_refinements     = refinements;
-
-  find_cells_on_the_interface();
-  split_communication();
-  initialize_source_dof_handler();
-  create_local_mesh();
-  setup_dofs();
-  build_maps();
-  relate_foreign_dofs();
-  //plot_triangulation();
-}
 //---------------------------
 template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::split_communication()
 {
+  int size,rank;
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &size);
+
+  worker_id = rank;
+  n_workers = size;
+
   int color;
 
   if(owns_cells_on_the_interface == false)
@@ -98,7 +92,6 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   if(owns_cells_on_the_interface == false)
     return;
 
-  int size,rank;
   MPI_Comm_size(interface_comm, &size);
   n_interface_workers = size;
   MPI_Comm_rank(interface_comm, &rank);
@@ -112,10 +105,6 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   //Number of workers in the other group
   n_foreign_workers = n_interface_workers - n_sd_workers;
 
-  //unsigned int min_rank;
-  //unsigned int id = i_worker_id;
-  //MPI_Allreduce(&id, &min_rank, 1, MPI_UNSIGNED, MPI_MIN, sd_comm);
-
   if(i_worker_id < n_sd_workers)
     MPI_Intercomm_create(sd_comm, 0, interface_comm, n_sd_workers, 111, &intercomm);
   else
@@ -126,16 +115,11 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   if (flag == false)
     Assert (false, ExcInternalError());
 
-  //if(i_worker_id == 0)
-    //std::cout << " Worker " << worker_id << " says: Flag is " << flag << std::endl;
+  //Get foreign ids
+  foreign_ids.resize (n_foreign_workers);
+  MPI_Allgather(&worker_id, 1, MPI_UNSIGNED, 
+                &foreign_ids[0], 1, MPI_UNSIGNED, intercomm);
 
-  int val=worker_id;
-  std::vector<int> reci (2);
-  MPI_Allgather(&val, 1, MPI_INT, &reci[0], 1, MPI_INT, intercomm);
-
-  //for(unsigned int i = 0; i < reci.size(); ++i)
-    //std::cout << "I am worker " << worker_id << " and reci["
-      //<< i << "]: " << reci[i] << std::endl;
 }
 //---------------------------
 //---------------------------
@@ -144,6 +128,7 @@ void ParallelMapLinker<dim, spacedim>::find_cells_on_the_interface()
 {
   owns_cells_on_the_interface = false;
 
+  unsigned int faces_per_cell = GeometryInfo<spacedim>::faces_per_cell;
   unsigned int counter = 0;
 
   n_stokes_cells = 0;
@@ -239,11 +224,12 @@ void ParallelMapLinker<dim, spacedim>::setup_dofs()
   if(owns_cells_on_the_interface == false)
     return;
 
-  lambda_dof_handler.distribute_dofs(lambda_fe);
-  lambda_vector.reinit (lambda_dof_handler.n_dofs());
+  target_dof_handler.initialize(triangulation, *target_fe);
+  //target_dof_handler.distribute_dofs(*target_fe);
+  solution_vector.reinit (target_dof_handler.n_dofs());
 
-  flux_dof_handler.distribute_dofs(flux_fe);
-  flux_vector.reinit (flux_dof_handler.n_dofs());
+
+
 }
 //--------------------------------------------------------
 //--------------------------------------------------------
@@ -265,6 +251,7 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh()
 
   std::vector<CellData<dim> > cell_vector (n_cells, CellData<dim>());
 
+  unsigned int faces_per_cell = GeometryInfo<spacedim>::faces_per_cell;
   unsigned int vertex_counter = 0;
   unsigned int cell_counter   = 0;
   unsigned int index;
@@ -302,29 +289,16 @@ void ParallelMapLinker<dim, spacedim>::create_local_mesh()
   //std::cout << "Worker " << worker_id << " says vertex counter: " << vertex_counter << std::endl;
   //std::cout << "Worker " << worker_id << " says cell   counter: " << cell_counter << std::endl;
 
-  lambda_triangulation.create_triangulation (point_vector, cell_vector, SubCellData());
-  double h_lambda = GridTools::maximal_cell_diameter(lambda_triangulation);
+  triangulation.create_triangulation (point_vector, cell_vector, SubCellData());
+  triangulation.refine_global( n_refinements );
+  double h_param = GridTools::maximal_cell_diameter(triangulation);
   if(worker_id == 0)
   {
-    std::cout << "*******Lambda information********" << std::endl;
+    std::cout << "*******Embedded triangulation information********" << std::endl;
     std::cout << "                   h           : " 
-              << h_lambda  << std::endl;
+              << h_param  << std::endl;
   }
-  flux_triangulation.copy_triangulation( lambda_triangulation );
-  flux_triangulation.refine_global( flux_refinements );
 }//end_create_local_mesh
-//--------------------------------------------
-//--------------------------------------------
-template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs()
-{ 
-  relate_target_foreign_dofs (lambda_dof_handler,
-                              lambda_send_size_indexed_by_worker,
-                              lambda_dof_vec);
-  relate_target_foreign_dofs (flux_dof_handler,
-                              flux_send_size_indexed_by_worker,
-                              flux_dof_vec);
-}
 //--------------------------------------------
 //--------------------------------------------
 template<>
@@ -347,10 +321,7 @@ double ParallelMapLinker<2, 3>::point_to_double (const Point<3> &p)
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
-                       const DoFHandler<dim, spacedim>  &target_dof_handler,
-                       std::vector<unsigned int> &send_size_indexed_by_worker,
-                       std::vector<unsigned int> &target_dof_vec) 
+void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs () 
 {
   if(owns_cells_on_the_interface == false)
     return;
@@ -358,6 +329,11 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
   M_point_dof  target_point_to_dof;
   DoFTools::map_support_points_to_dofs(MappingQ1<dim,spacedim>(),
                          target_dof_handler, target_point_to_dof);
+
+  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
+                                       target_dof_handler, 
+                                       support_points);
 
   //if(worker_id == 0)
     //std::cout << "Size of xpand: " << expanded_dof_coord_vec.size() << std::endl;
@@ -379,24 +355,45 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
 
   //Displacement vector
   std::vector<int> disp (n_foreign_workers, 0);
-  for(unsigned int i = 1; i < n_interface_workers; ++i)
+  for(unsigned int i = 1; i < n_foreign_workers; ++i)
     disp[i] = disp[i-1] + in_size_vec[i-1];
 
   //Incoming vector
   unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
+  //std::cout << "The total size is: " << total_size << std::endl;
   std::vector<double> incoming_data (total_size);
 
   //Transmission
   MPI_Allgatherv(&expanded_dof_coord_vec[0], expanded_dof_coord_vec.size(), MPI_DOUBLE, 
      &incoming_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
 
+
+  if(worker_id == 1)
+  {
+    for(unsigned int i = 0; i < in_size_vec.size(); ++i)
+      std::cout << "---size(" << i << "): " << in_size_vec[i] << std::endl;
+
+    for(unsigned int i = 0; i < support_points.size(); ++i)
+      std::cout << "p(" << i << "): " << support_points[i] << std::endl;
+
+    unsigned int point_counter = 0;
+    unsigned int c = 0;
+      Point<spacedim> temp;
+      while(point_counter < incoming_data.size() )
+      {
+        for(unsigned int k = 0; k < spacedim; ++k)
+        {
+          temp[k] = incoming_data[point_counter++]; 
+        }
+        std::cout << " *** P(" << c++ << "): " << temp << std::endl;
+      }
+  }
+
   std::vector<bool> is_taken (target_dof_handler.n_dofs(), false);
-  send_size_indexed_by_worker.resize ( n_foreign_workers );
+  send_size_indexed_by_foreign_worker.resize ( n_foreign_workers );
+  disp_indexed_by_foreign_worker.resize      ( n_foreign_workers );
   target_dof_vec.resize( target_dof_handler.n_dofs() );
 
-  unsigned int point_counter = 0;
-  unsigned int dof_counter = 0;
-  Point<spacedim> temp;
 
   //From the point of view of a processor on a certain domain,
   //he owns some cells on the boundary that have a corresponding
@@ -414,10 +411,10 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
   //The next step is to sort the support points so that both sender and
   //receiver agree on the order of the degrees of freedom.
   //
-  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
-  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
-                                       target_dof_handler, 
-                                       support_points);
+
+  unsigned int point_counter = 0;
+  unsigned int dof_counter = 0;
+  Point<spacedim> temp;
 
   for(unsigned int i = 0; i < n_foreign_workers; ++i)
   {
@@ -431,13 +428,26 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
         temp[k] = incoming_data[point_counter++]; 
       }
 
+      if(worker_id == 1)
+      {
+        std::cout << "...I got point " 
+                  << temp << " from worker " 
+                  << foreign_ids[i] << std::endl;
+      }
+
       auto it = target_point_to_dof.find(temp);
       if( it != target_point_to_dof.end())
       if(is_taken[it->second] == false)
       {
-        P_point_dof pair (it->first, it->second);
-        temp_pairs.push_back(pair);
+        //P_point_dof pair (it->first, it->second);
+        temp_pairs.push_back(*it);
         is_taken[it->second] = true;
+        if(worker_id == 1)
+        {
+          std::cout << "AAA I accepted point " 
+                    << it->first << " from worker " 
+                    << foreign_ids[i] << std::endl;
+        }
       }
     }//end_elements_of_i-th_process
 
@@ -447,11 +457,22 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
           [&](const P_point_dof &left, const P_point_dof &right) 
           { return Comparator()(left.first, right.first);});
 
-    send_size_indexed_by_worker[i] = temp_pairs.size();
+    send_size_indexed_by_foreign_worker[i] = temp_pairs.size();
 
     for(const auto &val : temp_pairs)
       target_dof_vec[dof_counter++] = val.second;
   }//end_for_each_foreign_worker
+
+  disp_indexed_by_foreign_worker[0] = 0;
+  //Displacement vector
+  for(unsigned int i = 1; i < n_foreign_workers; ++i)
+  {
+    unsigned int temp_disp = disp_indexed_by_foreign_worker[i-1] 
+                           + send_size_indexed_by_foreign_worker[i-1];
+    //if( send_size_indexed_by_foreign_worker[i] == 0 )
+      //temp_disp = disp_indexed_by_foreign_worker[i-1];
+    disp_indexed_by_foreign_worker[i] = temp_disp;
+  }
 
   //Test communication
   std::vector<double> data (target_dof_handler.n_dofs());
@@ -459,10 +480,33 @@ void ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs (
                   data.begin(), 
                   [&](Point<spacedim> &p)->double {return this->point_to_double(p);});
  
-  std::vector<double> data_to_send (data);
+  std::vector<double> data_to_send (data.size(),0);
+  std::vector<double> data_to_receive (data.size(),0);
 
   for(unsigned int i = 0; i < target_dof_handler.n_dofs(); ++i)
     data_to_send[i] = data[ target_dof_vec[i] ];
+
+  for(unsigned int i = 0; i < n_foreign_workers; ++i)
+  std::cout << "I am worker " << worker_id 
+            << " and I expect to send/receive " 
+            << send_size_indexed_by_foreign_worker[i]
+            << " units to worker " 
+            << foreign_ids[i]
+            << " with disp " 
+            << disp_indexed_by_foreign_worker[i]
+            <<  std::endl;
+
+  //std::cout << "I am worker " << worker_id 
+            //<< " and my data_to_send has length "
+            //<< data_to_send.size()
+            //<< " and my data_to_receive has length "
+            //<< data_to_receive.size()
+            //<<  std::endl;
+
+  //MPI_Alltoallv( &data_to_send[0], &send_size_indexed_by_foreign_worker[0],
+                 //&disp_indexed_by_foreign_worker[0], MPI_DOUBLE,
+                 //&data_to_receive[0], &send_size_indexed_by_foreign_worker[0],
+                 //&disp_indexed_by_foreign_worker[0], MPI_DOUBLE, intercomm);
 
 }//end_compare_target_centers
 //--------------------------------------------

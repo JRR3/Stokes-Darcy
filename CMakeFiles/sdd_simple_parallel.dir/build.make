@@ -282,28 +282,28 @@ CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o.provides: CMakeFiles/sdd_simpl
 
 CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o.provides.build: CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o: CMakeFiles/sdd_simple_parallel.dir/flags.make
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o: build_lambda_flux_p_maps.cc
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o: CMakeFiles/sdd_simple_parallel.dir/flags.make
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o: build_source_target_maps.cc
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/javier/dealii-8.3.0/examples/darcy_p/CMakeFiles $(CMAKE_PROGRESS_11)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o"
-	/software/openmpi/1.6.4/bin/mpicxx   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o -c /home/javier/dealii-8.3.0/examples/darcy_p/build_lambda_flux_p_maps.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o"
+	/software/openmpi/1.6.4/bin/mpicxx   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o -c /home/javier/dealii-8.3.0/examples/darcy_p/build_source_target_maps.cc
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.i"
-	/software/openmpi/1.6.4/bin/mpicxx  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/javier/dealii-8.3.0/examples/darcy_p/build_lambda_flux_p_maps.cc > CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.i
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.i"
+	/software/openmpi/1.6.4/bin/mpicxx  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/javier/dealii-8.3.0/examples/darcy_p/build_source_target_maps.cc > CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.i
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.s"
-	/software/openmpi/1.6.4/bin/mpicxx  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/javier/dealii-8.3.0/examples/darcy_p/build_lambda_flux_p_maps.cc -o CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.s
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.s"
+	/software/openmpi/1.6.4/bin/mpicxx  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/javier/dealii-8.3.0/examples/darcy_p/build_source_target_maps.cc -o CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.s
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.requires:
-.PHONY : CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.requires
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.requires:
+.PHONY : CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.requires
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.provides: CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.requires
-	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.provides.build
-.PHONY : CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.provides
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.provides: CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.requires
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.provides.build
+.PHONY : CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.provides
 
-CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.provides.build: CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o
+CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.provides.build: CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o
 
 CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.o: CMakeFiles/sdd_simple_parallel.dir/flags.make
 CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.o: my_l2_norm.cc
@@ -363,7 +363,7 @@ sdd_simple_parallel_OBJECTS = \
 "CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o" \
 "CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o" \
 "CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o" \
-"CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o" \
+"CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o" \
 "CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.o" \
 "CMakeFiles/sdd_simple_parallel.dir/sdd_simple_parallel.cc.o"
 
@@ -380,7 +380,7 @@ sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/plot_i_data.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o
-sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o
+sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/sdd_simple_parallel.cc.o
 sdd_simple_parallel: CMakeFiles/sdd_simple_parallel.dir/build.make
@@ -457,7 +457,7 @@ CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/
 CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/map_linker.cc.o.requires
 CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o.requires
 CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/mesh_data.cc.o.requires
-CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o.requires
+CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o.requires
 CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/my_l2_norm.cc.o.requires
 CMakeFiles/sdd_simple_parallel.dir/requires: CMakeFiles/sdd_simple_parallel.dir/sdd_simple_parallel.cc.o.requires
 .PHONY : CMakeFiles/sdd_simple_parallel.dir/requires

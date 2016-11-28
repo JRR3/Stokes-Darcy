@@ -21,25 +21,21 @@ class ParallelMapLinker
   private:
     enum                              DomainType {Darcy, Stokes};
     DomainType                        domain_type;
+    Triangulation<dim,spacedim>       triangulation;
     MPI_Comm                          interface_comm;
     MPI_Comm                          sd_comm;
     MPI_Comm                          intercomm;
+    const FiniteElement<dim,spacedim> * target_fe;
     const DoFHandler<spacedim>        * stokes_dof_handler;
     const DoFHandler<spacedim>        * darcy_dof_handler;
     const DoFHandler<spacedim>        * source_dof_handler;
-    //const DoFHandler<spacedim>        * target_dof_handler;
+    DoFHandler<dim,spacedim>          target_dof_handler;
+    Vector<double>                    solution_vector;
     unsigned int                      interface_id;
-    unsigned int                      dofs_per_cell;
-    unsigned int                      dofs_per_face;
-    unsigned int                      stokes_dofs_per_cell;
-    unsigned int                      stokes_dofs_per_face;
-    unsigned int                      darcy_dofs_per_cell;
-    unsigned int                      darcy_dofs_per_face;
     unsigned int                      n_cells;
     unsigned int                      n_stokes_cells;
     unsigned int                      n_darcy_cells;
     unsigned int                      n_interface_workers;
-    unsigned int                      flux_refinements;
     unsigned int                      i_worker_id;
     unsigned int                      sd_worker_id;
     unsigned int                      n_sd_workers;
@@ -48,11 +44,9 @@ class ParallelMapLinker
     bool                              owns_cells_on_both_domains;
     bool                              owns_cells_on_stokes;
     bool                              owns_cells_on_darcy;
-    const unsigned int                worker_id;
-    const unsigned int                n_workers;
-    const unsigned int                faces_per_cell;
-    Triangulation<dim,spacedim>       lambda_triangulation;
-    Triangulation<dim,spacedim>       flux_triangulation;
+    unsigned int                      worker_id;
+    unsigned int                      n_workers;
+    unsigned int                      n_refinements;
     struct Comparator
     {
       bool operator()(const Point<spacedim> &p1, const Point<spacedim> &p2) const;
@@ -61,22 +55,16 @@ class ParallelMapLinker
 
   public:
     ParallelMapLinker();
+    void reinit(
+      const DoFHandler<spacedim> &stokes,
+      const DoFHandler<spacedim> &darcy,
+      const FiniteElement<dim,spacedim> &fe,
+      const unsigned int         &id,
+      const unsigned int         &refinements);
     void clear();
-    void attach_relevant_objects(  const DoFHandler<spacedim> &stokes,
-                                   const DoFHandler<spacedim> &darcy,
-                                   const unsigned int         &id,
-                                   const unsigned int         &refinements);
+
   private:
-    FE_Q<dim, spacedim>               lambda_fe;
-    DoFHandler<dim,spacedim>          lambda_dof_handler;
-    Vector<double>                    lambda_vector;
-
-    FE_DGQ<dim, spacedim>             flux_fe;
-    DoFHandler<dim,spacedim>          flux_dof_handler;
-    Vector<double>                    flux_vector;
-
-    std::vector<unsigned int>         source_face_vec;
-
+    std::vector<unsigned int>               source_face_vec;
     typedef typename DoFHandler<spacedim>::active_cell_iterator      DHIs;
     typedef typename DoFHandler<dim,spacedim>::active_cell_iterator  DHIt;
     typedef std::map<DHIs,unsigned int>     M_source_cell_id;
@@ -84,17 +72,13 @@ class ParallelMapLinker
     typedef std::pair<DHIs, unsigned int >  P_cell_face;
     typedef std::map<Point<spacedim>, DHIt, Comparator> M_target_center_cell;
     typedef std::map<Point<spacedim>, types::global_dof_index, Comparator> M_point_dof;
-    std::map<DHIs, std::vector<DHIt> >      source_to_lambda;
-    std::map<DHIs, std::vector<DHIt> >      source_to_flux;
-    std::map<DHIt, P_cell_face>             lambda_to_source;
-    std::map<DHIt, P_cell_face>             flux_to_source;
+    std::map<DHIs, std::vector<DHIt> >      source_to_target;
+    std::map<DHIt, P_cell_face>             target_to_source;
     M_source_cell_id                        source_cell_num;
-    std::vector<unsigned int>               lambda_send_size_indexed_by_worker;
-    std::vector<unsigned int>               flux_send_size_indexed_by_worker;
-    std::vector<unsigned int>               lambda_dof_vec;
-    std::vector<unsigned int>               flux_dof_vec;
-    std::vector<unsigned int>               lambda_disp;
-    std::vector<unsigned int>               flux_disp;
+    std::vector<int>                        send_size_indexed_by_foreign_worker;
+    std::vector<int>                        disp_indexed_by_foreign_worker;
+    std::vector<unsigned int>               target_dof_vec;
+    std::vector<unsigned int>               foreign_ids;
 
 
   private:
@@ -103,18 +87,9 @@ class ParallelMapLinker
     void initialize_source_dof_handler();
     void create_local_mesh();
     void setup_dofs();
-    void create_maps();
     void plot_triangulation();
-    void build_source_target_map(
-      const DoFHandler<dim, spacedim>         &target_dof_handler,
-      std::map<DHIs, std::vector<DHIt> >      &source_to_target,
-      std::map<DHIt, P_cell_face>             &target_to_source);
-    void build_maps();
+    void build_source_target_map();
     double point_to_double(const Point<spacedim> &p);
-    void relate_target_foreign_dofs (
-           const DoFHandler<dim, spacedim>  &target_dof_handler,
-           std::vector<unsigned int> &send_size_indexed_by_worker,
-           std::vector<unsigned int> &target_dof_vec);
     void relate_foreign_dofs();
     void test_communication();
 

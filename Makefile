@@ -205,29 +205,29 @@ strip_comments/fast:
 	$(MAKE) -f CMakeFiles/strip_comments.dir/build.make CMakeFiles/strip_comments.dir/build
 .PHONY : strip_comments/fast
 
-build_lambda_flux_p_maps.o: build_lambda_flux_p_maps.cc.o
-.PHONY : build_lambda_flux_p_maps.o
+build_source_target_maps.o: build_source_target_maps.cc.o
+.PHONY : build_source_target_maps.o
 
 # target to build an object file
-build_lambda_flux_p_maps.cc.o:
-	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.o
-.PHONY : build_lambda_flux_p_maps.cc.o
+build_source_target_maps.cc.o:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.o
+.PHONY : build_source_target_maps.cc.o
 
-build_lambda_flux_p_maps.i: build_lambda_flux_p_maps.cc.i
-.PHONY : build_lambda_flux_p_maps.i
+build_source_target_maps.i: build_source_target_maps.cc.i
+.PHONY : build_source_target_maps.i
 
 # target to preprocess a source file
-build_lambda_flux_p_maps.cc.i:
-	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.i
-.PHONY : build_lambda_flux_p_maps.cc.i
+build_source_target_maps.cc.i:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.i
+.PHONY : build_source_target_maps.cc.i
 
-build_lambda_flux_p_maps.s: build_lambda_flux_p_maps.cc.s
-.PHONY : build_lambda_flux_p_maps.s
+build_source_target_maps.s: build_source_target_maps.cc.s
+.PHONY : build_source_target_maps.s
 
 # target to generate assembly for a file
-build_lambda_flux_p_maps.cc.s:
-	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_lambda_flux_p_maps.cc.s
-.PHONY : build_lambda_flux_p_maps.cc.s
+build_source_target_maps.cc.s:
+	$(MAKE) -f CMakeFiles/sdd_simple_parallel.dir/build.make CMakeFiles/sdd_simple_parallel.dir/build_source_target_maps.cc.s
+.PHONY : build_source_target_maps.cc.s
 
 convergence_rates.o: convergence_rates.cc.o
 .PHONY : convergence_rates.o
@@ -533,9 +533,9 @@ help:
 	@echo "... runclean"
 	@echo "... sdd_simple_parallel"
 	@echo "... strip_comments"
-	@echo "... build_lambda_flux_p_maps.o"
-	@echo "... build_lambda_flux_p_maps.i"
-	@echo "... build_lambda_flux_p_maps.s"
+	@echo "... build_source_target_maps.o"
+	@echo "... build_source_target_maps.i"
+	@echo "... build_source_target_maps.s"
 	@echo "... convergence_rates.o"
 	@echo "... convergence_rates.i"
 	@echo "... convergence_rates.s"

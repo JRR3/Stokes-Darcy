@@ -4,57 +4,11 @@
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
-gmake[4]: Warning: File `Makefile' has modification time 0.021 s in the future
-gmake[5]: Warning: File `CMakeFiles/Makefile2' has modification time 0.015 s in the future
 [  7%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs(const dealii::DoFHandler<dim, spacedim>&, std::vector<unsigned int>&, std::vector<unsigned int>&) [with int dim = 1; int spacedim = 2]’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:506:16:   required from here
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: error: no matching function for call to ‘transform(std::vector<dealii::Point<2, double>, std::allocator<dealii::Point<2, double> > >::iterator, std::vector<dealii::Point<2, double>, std::allocator<dealii::Point<2, double> > >::iterator, std::vector<double>::iterator, <unresolved overloaded function type>)’
-                   ParallelMapLinker<dim,spacedim>::point_to_double);
-                                                                   ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: note: candidates are:
-In file included from /software/gcc/4.8.1/include/c++/4.8.1/algorithm:62:0,
-                 from /home/javier/share/trilinos/include/Epetra_ConfigDefs.h:51,
-                 from /home/javier/share/trilinos/include/Epetra_Comm.h:47,
-                 from /home/javier/dealii-8.3.0/include/deal.II/base/utilities.h:29,
-                 from /home/javier/dealii-8.3.0/include/deal.II/base/index_set.h:20,
-                 from /home/javier/dealii-8.3.0/include/deal.II/dofs/dof_handler.h:24,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.h:4,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:1:
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4938:5: note: _OIter std::transform(_IIter, _IIter, _OIter, _UnaryOperation) [with _IIter = __gnu_cxx::__normal_iterator<dealii::Point<2, double>*, std::vector<dealii::Point<2, double>, std::allocator<dealii::Point<2, double> > > >; _OIter = __gnu_cxx::__normal_iterator<double*, std::vector<double> >; _UnaryOperation = double (dealii::ParallelMapLinker<1, 2>::*)(const dealii::Point<2, double>&)]
-     transform(_InputIterator __first, _InputIterator __last,
-     ^
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4938:5: note:   no known conversion for argument 4 from ‘<unresolved overloaded function type>’ to ‘double (dealii::ParallelMapLinker<1, 2>::*)(const dealii::Point<2, double>&)’
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4975:5: note: template<class _IIter1, class _IIter2, class _OIter, class _BinaryOperation> _OIter std::transform(_IIter1, _IIter1, _IIter2, _OIter, _BinaryOperation)
-     transform(_InputIterator1 __first1, _InputIterator1 __last1,
-     ^
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4975:5: note:   template argument deduction/substitution failed:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: note:   candidate expects 5 arguments, 4 provided
-                   ParallelMapLinker<dim,spacedim>::point_to_double);
-                                                                   ^
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In instantiation of ‘void dealii::ParallelMapLinker<dim, spacedim>::relate_target_foreign_dofs(const dealii::DoFHandler<dim, spacedim>&, std::vector<unsigned int>&, std::vector<unsigned int>&) [with int dim = 2; int spacedim = 3]’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:507:16:   required from here
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: error: no matching function for call to ‘transform(std::vector<dealii::Point<3, double>, std::allocator<dealii::Point<3, double> > >::iterator, std::vector<dealii::Point<3, double>, std::allocator<dealii::Point<3, double> > >::iterator, std::vector<double>::iterator, <unresolved overloaded function type>)’
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: note: candidates are:
-In file included from /software/gcc/4.8.1/include/c++/4.8.1/algorithm:62:0,
-                 from /home/javier/share/trilinos/include/Epetra_ConfigDefs.h:51,
-                 from /home/javier/share/trilinos/include/Epetra_Comm.h:47,
-                 from /home/javier/dealii-8.3.0/include/deal.II/base/utilities.h:29,
-                 from /home/javier/dealii-8.3.0/include/deal.II/base/index_set.h:20,
-                 from /home/javier/dealii-8.3.0/include/deal.II/dofs/dof_handler.h:24,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.h:4,
-                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:1:
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4938:5: note: _OIter std::transform(_IIter, _IIter, _OIter, _UnaryOperation) [with _IIter = __gnu_cxx::__normal_iterator<dealii::Point<3, double>*, std::vector<dealii::Point<3, double>, std::allocator<dealii::Point<3, double> > > >; _OIter = __gnu_cxx::__normal_iterator<double*, std::vector<double> >; _UnaryOperation = double (dealii::ParallelMapLinker<2, 3>::*)(const dealii::Point<3, double>&)]
-     transform(_InputIterator __first, _InputIterator __last,
-     ^
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4938:5: note:   no known conversion for argument 4 from ‘<unresolved overloaded function type>’ to ‘double (dealii::ParallelMapLinker<2, 3>::*)(const dealii::Point<3, double>&)’
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4975:5: note: template<class _IIter1, class _IIter2, class _OIter, class _BinaryOperation> _OIter std::transform(_IIter1, _IIter1, _IIter2, _OIter, _BinaryOperation)
-     transform(_InputIterator1 __first1, _InputIterator1 __last1,
-     ^
-/software/gcc/4.8.1/include/c++/4.8.1/bits/stl_algo.h:4975:5: note:   template argument deduction/substitution failed:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:460:67: note:   candidate expects 5 arguments, 4 provided
-                   ParallelMapLinker<dim,spacedim>::point_to_double);
-                                                                   ^
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In member function ‘void dealii::ParallelMapLinker<dim, spacedim>::relate_foreign_dofs()’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:434:22: error: ‘it’ was not declared in this scope
+                   << it->first << " from worker " 
+                      ^
 gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o] Error 1
 gmake[5]: *** [CMakeFiles/sdd_simple_parallel.dir/all] Error 2
 gmake[4]: *** [all] Error 2

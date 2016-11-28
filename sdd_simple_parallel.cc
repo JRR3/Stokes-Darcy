@@ -226,10 +226,6 @@
     TrilinosWrappers::MPI::BlockVector        old_stokes_vector;
     TrilinosWrappers::MPI::BlockVector        stokes_rhs;
 
-    MapLinker<dim> stokes_flux_map;
-    MapLinker<dim> stokes_lambda_map;
-
-    ParallelMapLinker<dim-1,dim> parallel_map;
 
     unsigned int n_u_s;
     unsigned int n_p_s;
@@ -400,19 +396,27 @@
     std_cxx11::shared_ptr<Precondition_S_Stokes>   stokes_zero_bc_Mp_preconditioner;
 
     PreconditionIdentity                           identity_preconditioner;
+
     //------------------------------------------------External functions
     InterfacialPressureFunction2<dim> ip_function;
     FluxFunction2<dim>                flux_function;
     StokesExactSolution2<dim>         stokes_exact_solution;
     DarcyExactSolution2<dim>          darcy_exact_solution;
+
     //------------------------------------------------
     //InterfacialPressureFunction<dim> ip_function;
     //FluxFunction<dim>                flux_function;
     //StokesExactSolution<dim>         stokes_exact_solution;
     //DarcyExactSolution<dim>          darcy_exact_solution;
+
     //------------------------------------------------Convergence rates
     ConvergenceRates<dim, StokesExactSolution2<dim>, MPI_BlockVector> cr_stokes;
     ConvergenceRates<dim, DarcyExactSolution2<dim>, MPI_BlockVector>  cr_darcy;
+    MapLinker<dim> stokes_flux_map;
+    MapLinker<dim> stokes_lambda_map;
+
+    //------------------------------------------------Linker maps
+    ParallelMapLinker<dim-1,dim> lambda_parallel_map;
 
   };
 
