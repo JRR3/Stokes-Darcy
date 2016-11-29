@@ -79,6 +79,8 @@ class ParallelMapLinker
     std::vector<int>                        disp_indexed_by_foreign_worker;
     std::vector<unsigned int>               target_dof_vec;
     std::vector<unsigned int>               foreign_ids;
+    std::vector<std::size_t>                local_hash_vec;
+    std::map<std::size_t, unsigned int>     local_hash_map;
 
 
   private:
@@ -90,6 +92,9 @@ class ParallelMapLinker
     void plot_triangulation();
     void build_source_target_map();
     double point_to_double(const Point<spacedim> &p);
+    std::size_t point_hasher(const Point<spacedim> &p);
+    double zero_to_pi(const double &num);
+    void verify_domains_match();
     void relate_foreign_dofs();
     void test_communication();
 

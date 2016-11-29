@@ -37,6 +37,7 @@ void ParallelMapLinker<dim, spacedim>::reinit(
   create_local_mesh();
   setup_dofs();
   build_source_target_map();
+  verify_domains_match();
   relate_foreign_dofs();
 }
 //---------------------------
@@ -228,8 +229,6 @@ void ParallelMapLinker<dim, spacedim>::setup_dofs()
   //target_dof_handler.distribute_dofs(*target_fe);
   solution_vector.reinit (target_dof_handler.n_dofs());
 
-
-
 }
 //--------------------------------------------------------
 //--------------------------------------------------------
@@ -326,6 +325,7 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
   if(owns_cells_on_the_interface == false)
     return;
 
+  //Check
   M_point_dof  target_point_to_dof;
   DoFTools::map_support_points_to_dofs(MappingQ1<dim,spacedim>(),
                          target_dof_handler, target_point_to_dof);
@@ -334,9 +334,6 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
   DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
                                        target_dof_handler, 
                                        support_points);
-
-  //if(worker_id == 0)
-    //std::cout << "Size of xpand: " << expanded_dof_coord_vec.size() << std::endl;
 
   std::vector<double> expanded_dof_coord_vec (spacedim * target_point_to_dof.size());
   unsigned int count = 0;
@@ -420,15 +417,17 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
   {
     std::vector<unsigned int> temp_dof_vec;
     std::vector<P_point_dof> temp_pairs;
+    unsigned int n_points_rec_by_foreign_worker 
+      = in_size_vec[i] / spacedim;
 
-    for(unsigned int j = 0; j < in_size_vec[i]; ++j)
+    for(unsigned int j = 0; j < n_points_rec_by_foreign_worker; ++j)
     {
       for(unsigned int k = 0; k < spacedim; ++k)
       {
         temp[k] = incoming_data[point_counter++]; 
       }
 
-      if(worker_id == 1)
+      if(worker_id == -1)
       {
         std::cout << "...I got point " 
                   << temp << " from worker " 
@@ -442,7 +441,7 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
         //P_point_dof pair (it->first, it->second);
         temp_pairs.push_back(*it);
         is_taken[it->second] = true;
-        if(worker_id == 1)
+        if(worker_id == -1)
         {
           std::cout << "AAA I accepted point " 
                     << it->first << " from worker " 
@@ -509,6 +508,101 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
                  //&disp_indexed_by_foreign_worker[0], MPI_DOUBLE, intercomm);
 
 }//end_compare_target_centers
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::verify_domains_match()
+{
+  if(owns_cells_on_the_interface == false)
+    return;
+
+  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
+                                       target_dof_handler, 
+                                       support_points);
+  //std::vector<std::size_t> hash_vec (support_points.size());
+  local_hash_vec.resize ( support_points.size() );
+
+  //Hash points
+  std::transform(support_points.begin(), support_points.end(), local_hash_vec.begin(),
+      [&](const Point<spacedim> &p)->std::size_t {return this->point_hasher(p);});
+
+  //Populate local hash map
+  unsigned int counter = 0;
+  for(const auto &val : local_hash_vec)
+    local_hash_map[val] = counter++;
+  
+
+  //Exchange size within SD group
+  int size = support_points.size();
+  std::vector<int> in_size_vec (n_sd_workers);
+  MPI_Gather(&size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, 0, sd_comm);
+
+  //Build disp
+  std::vector<int> disp (n_sd_workers,0);
+  for(unsigned int i = 1; i < disp.size(); ++i)
+    disp[i] = disp[i-1] + in_size_vec[i-1];
+
+  //Exchange local hash map within group
+  unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
+  std::vector<std::size_t> full_hash_vec (total_size);
+  MPI_Gatherv(&local_hash_vec[0], local_hash_vec.size(), MPI_UNSIGNED_LONG, 
+              &full_hash_vec[0], &in_size_vec[0], &disp[0], MPI_UNSIGNED_LONG, 0, sd_comm);
+
+
+  if(sd_worker_id != 0)
+    return;
+
+  //Remove repetitions
+  std::sort(full_hash_vec.begin(), full_hash_vec.end());
+  auto last = std::unique(full_hash_vec.begin(), full_hash_vec.end());
+  full_hash_vec.erase(last, full_hash_vec.end());
+
+  size = full_hash_vec.size();
+
+  int rec_size = -1;
+  MPI_Status status;
+
+  //Excahnge size within leaders of each group
+  MPI_Sendrecv(&size, 1, MPI_INT, 0, 111, 
+               &rec_size, 1, MPI_INT, 0, 111, intercomm, &status);
+
+  std::vector<std::size_t> foreign_hash_vec (rec_size);
+
+  //Excahnge full hash within leaders of each group
+  MPI_Sendrecv(&full_hash_vec[0], full_hash_vec.size(), MPI_UNSIGNED_LONG, 0, 111, 
+               &foreign_hash_vec[0], rec_size, MPI_UNSIGNED_LONG, 0, 111, intercomm, &status);
+
+  if(full_hash_vec != foreign_hash_vec)
+  {
+    std::cout << "Worker " << worker_id << " says that the vectors are not equal" << std::endl;
+    Assert (false, ExcNotImplemented());
+  }
+  //for(unsigned int i = 0; i < full_hash_vec.size(); ++i)
+    //std::cout << "Worker " << worker_id << " will received " << rec_size << std::endl;
+}
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+double ParallelMapLinker<dim,spacedim>::zero_to_pi(const double &num)
+{
+  if(num == 0)
+    return numbers::PI;
+  return num;
+}
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+std::size_t ParallelMapLinker<dim,spacedim>::point_hasher(const Point<spacedim> &p)
+{
+  std::hash<double> hasher;
+  std::size_t hash = hasher(zero_to_pi(p[0]));
+
+  for(unsigned int i = 1; i <  spacedim; ++i)
+    hash ^= hasher(zero_to_pi(p[i])) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+
+  return hash;
+}
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
