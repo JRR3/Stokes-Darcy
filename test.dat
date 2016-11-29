@@ -1,5 +1,5 @@
-Darcy  fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
-Stokes fe: FESystem<2>[FE_Q<2>(2)^2-FE_Q<2>(1)]
+Darcy  fe: FESystem<3>[FE_Q<3>(2)^3-FE_Q<3>(1)]
+Stokes fe: FESystem<3>[FE_Q<3>(2)^3-FE_Q<3>(1)]
 Grad div         : 0
 CG LSQ eps       : 1e-06
 Darcy BC weak    : True
@@ -10,96 +10,57 @@ Flux refinements : 2
 +++++Run S+D stationary rates ++++++++++ 
 +++++Run S+D stationary rates ++++++++++ 
 *******Embedded triangulation information********
-                   h           : 0.0625
-I am worker 0 and I expect to send/receive 17 units to worker 2 with disp 0
-I am worker 0 and I expect to send/receive 0 units to worker 3 with disp 17
-*******Stokes information********
-Number of active cells: 256
-   Number of degrees of freedom: 2467
                    h           : 0.0883883
+Worker 0 has domain type Stokes
+Worker 1 has domain type Stokes
+Worker 2 has domain type Darcy
+Worker 3 has domain type Darcy
+I am worker 3 and I expect to receive 33 units from worker 0 with disp 0
+I am worker 3 and I expect to receive 528 units from worker 1 with disp 33
+I am worker 3 and I expect to send 0 units to worker 0 with disp 0
+I am worker 3 and I expect to send 528 units to worker 1 with disp 0
+I am worker 2 and I expect to receive 561 units from worker 0 with disp 0
+I am worker 2 and I expect to receive 0 units from worker 1 with disp 561
+I am worker 2 and I expect to send 561 units to worker 0 with disp 0
+I am worker 2 and I expect to send 33 units to worker 1 with disp 561
+I am worker 0 and I expect to receive 561 units from worker 2 with disp 0
+I am worker 0 and I expect to receive 0 units from worker 3 with disp 561
+I am worker 0 and I expect to send 561 units to worker 2 with disp 0
+I am worker 0 and I expect to send 33 units to worker 3 with disp 561
+I am worker 1 and I expect to receive 33 units from worker 2 with disp 0
+I am worker 1 and I expect to receive 528 units from worker 3 with disp 33
+I am worker 1 and I expect to send 0 units to worker 2 with disp 0
+I am worker 1 and I expect to send 528 units to worker 3 with disp 0
+Работник 2 сказал очень хорошо
+Работник 0 сказал очень хорошо
+*******Stokes information********
+Number of active cells: 4096
+   Number of degrees of freedom: 112724
+                   h           : 0.108253
 
 *******Darcy information********
-Number of active cells: 256
-   Number of degrees of freedom: 2467
-                   h           : 0.0883883
+Number of active cells: 4096
+   Number of degrees of freedom: 112724
+                   h           : 0.108253
 
 *******Porosity information********
-Number of active cells: 256
-   Number of degrees of freedom: 289
+Number of active cells: 4096
+   Number of degrees of freedom: 4913
 
 
 *******Grand total********
-5223 dofs in the system.
-I am worker 3 and I expect to send/receive 1 units to worker 0 with disp 0
-I am worker 3 and I expect to send/receive 16 units to worker 1 with disp 1
----size(0): 34
----size(1): 34
-p(0): 0.5 1
-p(1): 0.5625 1
-p(2): 0.53125 1
-p(3): 0.625 1
-p(4): 0.59375 1
-p(5): 0.6875 1
-p(6): 0.65625 1
-p(7): 0.75 1
-p(8): 0.71875 1
-p(9): 0.8125 1
-p(10): 0.78125 1
-p(11): 0.875 1
-p(12): 0.84375 1
-p(13): 0.9375 1
-p(14): 0.90625 1
-p(15): 1 1
-p(16): 0.96875 1
- *** P(0): 0 1
- *** P(1): 0.03125 1
- *** P(2): 0.0625 1
- *** P(3): 0.09375 1
- *** P(4): 0.125 1
- *** P(5): 0.15625 1
- *** P(6): 0.1875 1
- *** P(7): 0.21875 1
- *** P(8): 0.25 1
- *** P(9): 0.28125 1
- *** P(10): 0.3125 1
- *** P(11): 0.34375 1
- *** P(12): 0.375 1
- *** P(13): 0.40625 1
- *** P(14): 0.4375 1
- *** P(15): 0.46875 1
- *** P(16): 0.5 1
- *** P(17): 0.5 1
- *** P(18): 0.53125 1
- *** P(19): 0.5625 1
- *** P(20): 0.59375 1
- *** P(21): 0.625 1
- *** P(22): 0.65625 1
- *** P(23): 0.6875 1
- *** P(24): 0.71875 1
- *** P(25): 0.75 1
- *** P(26): 0.78125 1
- *** P(27): 0.8125 1
- *** P(28): 0.84375 1
- *** P(29): 0.875 1
- *** P(30): 0.90625 1
- *** P(31): 0.9375 1
- *** P(32): 0.96875 1
- *** P(33): 1 1
-I am worker 1 and I expect to send/receive 1 units to worker 2 with disp 0
-I am worker 1 and I expect to send/receive 16 units to worker 3 with disp 1
-I am worker 2 and I expect to send/receive 17 units to worker 0 with disp 0
-I am worker 2 and I expect to send/receive 0 units to worker 1 with disp 17
+230361 dofs in the system.
 
 
 +---------------------------------------------+------------+------------+
-| Total wallclock time elapsed since start    |    0.0505s |            |
+| Total wallclock time elapsed since start    |       2.5s |            |
 |                                             |            |            |
 | Section                         | no. calls |  wall time | % of total |
 +---------------------------------+-----------+------------+------------+
-| Darcy grid                      |         1 |  0.000914s |       1.8% |
-| Darcy setup dofs                |         1 |    0.0113s |        22% |
-| Initialize parallel maps        |         1 |   0.00151s |         3% |
-| Stokes grid                     |         1 |  9.61e-05s |      0.19% |
-| Stokes setup dofs               |         1 |    0.0205s |        41% |
+| Darcy grid                      |         1 |   0.00111s |     0.044% |
+| Darcy setup dofs                |         1 |     0.841s |        34% |
+| Initialize parallel maps        |         1 |    0.0523s |       2.1% |
+| Stokes grid                     |         1 |  0.000172s |    0.0069% |
+| Stokes setup dofs               |         1 |      1.44s |        58% |
 +---------------------------------+-----------+------------+------------+
 

@@ -33,6 +33,8 @@ class ParallelMapLinker
     Vector<double>                    solution_vector;
     unsigned int                      interface_id;
     unsigned int                      n_cells;
+    unsigned int                      n_elements_to_send;
+    unsigned int                      n_elements_to_recv;
     unsigned int                      n_stokes_cells;
     unsigned int                      n_darcy_cells;
     unsigned int                      n_interface_workers;
@@ -76,8 +78,14 @@ class ParallelMapLinker
     std::map<DHIt, P_cell_face>             target_to_source;
     M_source_cell_id                        source_cell_num;
     std::vector<int>                        send_size_indexed_by_foreign_worker;
-    std::vector<int>                        disp_indexed_by_foreign_worker;
-    std::vector<unsigned int>               target_dof_vec;
+    std::vector<int>                        recv_size_indexed_by_foreign_worker;
+    std::vector<int>                        send_disp_indexed_by_foreign_worker;
+    std::vector<int>                        recv_disp_indexed_by_foreign_worker;
+    std::vector<std::size_t>                request_hash_vec;
+    std::vector<unsigned int>               recv_dof_index_vec;
+    std::vector<unsigned int>               send_dof_index_vec;
+    std::vector<double>                     send_dof_value_vec;
+    std::vector<double>                     recv_dof_value_vec;
     std::vector<unsigned int>               foreign_ids;
     std::vector<std::size_t>                local_hash_vec;
     std::map<std::size_t, unsigned int>     local_hash_map;

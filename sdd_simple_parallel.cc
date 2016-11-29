@@ -576,7 +576,7 @@ int main (int argc, char* argv[] )
 
       deallog.depth_console (0);
 
-      SD<2> flow_problem;
+      SD<3> flow_problem;
       //flow_problem.run_simple ();
       //flow_problem.run ();
       flow_problem.run_lambda_stokes_darcy ();

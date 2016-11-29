@@ -39,6 +39,7 @@ void ParallelMapLinker<dim, spacedim>::reinit(
   build_source_target_map();
   verify_domains_match();
   relate_foreign_dofs();
+  test_communication();
 }
 //---------------------------
 template<int dim, int spacedim>
@@ -47,10 +48,11 @@ bool ParallelMapLinker<dim, spacedim>::Comparator::
 {
   for(unsigned int i = 0; i < spacedim; ++i)
   {
-    double diff = p2[i] - p1[i];
-    if(std::abs(diff) <  1e-9)
+    //double diff = p2[i] - p1[i];
+    //if(std::abs(diff) <  1e-9)
+    if(p1[i] == p2[i])
       continue;
-    else if(diff > 0)
+    else if(p1[i] < p2[i])
       return true;
     else //(p1[i] > p2[i])
       return false;
@@ -215,6 +217,7 @@ void ParallelMapLinker<dim, spacedim>::initialize_source_dof_handler()
     n_cells = n_darcy_cells;
     domain_type = Darcy;
   } 
+
   
 }
 //--------------------------------------------------------
@@ -224,6 +227,11 @@ void ParallelMapLinker<dim, spacedim>::setup_dofs()
 {
   if(owns_cells_on_the_interface == false)
     return;
+
+  if(domain_type == Stokes)
+    std::cout << "Worker " << worker_id << " has domain type Stokes" << std::endl;
+  if(domain_type == Darcy)
+    std::cout << "Worker " << worker_id << " has domain type Darcy" << std::endl;
 
   target_dof_handler.initialize(triangulation, *target_fe);
   //target_dof_handler.distribute_dofs(*target_fe);
@@ -319,33 +327,34 @@ double ParallelMapLinker<2, 3>::point_to_double (const Point<3> &p)
 }
 //--------------------------------------------
 //--------------------------------------------
+//From the point of view of a processor on a certain domain,
+//he owns some cells on the boundary that have a corresponding
+//neighboring cell owned by a different processor belonging
+//to the other domain. Once we get the list of the degrees of 
+//freedom owned by each foreign processor, we determine from
+//which processor we expect to receive data. The list is ordered
+//by the rank of each processor on the foreign group. Afterwards,
+//we relate every dof that we own with a dof from the list of foreign
+//processors. Since the dof numbering in one processor might be different
+//to the numbering in the foreign processor, instead of sending 
+//the dof numbering, we send a hash correspondig to coordinates 
+//of the support points. This idea only works when the finite 
+//element space does indeed have the concept of support points. 
+//(This holds for Lagrangian elements)
 template<int dim, int spacedim>
 void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs () 
 {
   if(owns_cells_on_the_interface == false)
     return;
 
-  //Check
-  M_point_dof  target_point_to_dof;
-  DoFTools::map_support_points_to_dofs(MappingQ1<dim,spacedim>(),
-                         target_dof_handler, target_point_to_dof);
+  unsigned int n_local_dofs = target_dof_handler.n_dofs();
 
-  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
-  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
-                                       target_dof_handler, 
-                                       support_points);
+  //Idea: Each worker compares his hash map with the full hash map of the other group
 
-  std::vector<double> expanded_dof_coord_vec (spacedim * target_point_to_dof.size());
-  unsigned int count = 0;
-
-  //Expand vector
-  for(auto const &it : target_point_to_dof)
-  for(unsigned int i = 0; i < spacedim; ++i)
-    expanded_dof_coord_vec[count++] = it.first[i];
-
+  //Exchange sizes
+  int size = local_hash_vec.size();
   std::vector<int> in_size_vec (n_foreign_workers);
-  int my_vec_size = expanded_dof_coord_vec.size();
-  MPI_Allgather(&my_vec_size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, intercomm);
+  MPI_Allgather(&size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, intercomm);
 
   //for(unsigned int i = 0; i < in_size_vec.size(); ++i)
   //std::cout << " Worker: " << worker_id << " has " << in_size_vec[i] << std::endl;
@@ -358,156 +367,174 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
   //Incoming vector
   unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
   //std::cout << "The total size is: " << total_size << std::endl;
-  std::vector<double> incoming_data (total_size);
+  std::vector<std::size_t> foreign_hash_vec (total_size);
 
   //Transmission
-  MPI_Allgatherv(&expanded_dof_coord_vec[0], expanded_dof_coord_vec.size(), MPI_DOUBLE, 
-     &incoming_data[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, intercomm);
+  MPI_Allgatherv(&local_hash_vec[0], local_hash_vec.size(), MPI_UNSIGNED_LONG, 
+     &foreign_hash_vec[0], &in_size_vec[0], &disp[0], MPI_UNSIGNED_LONG, intercomm);
 
+  //for(unsigned int i = 0; i < in_size_vec.size(); ++i)
+  //std::cout << "Worker " << worker_id << " says his in_size_vec[" << i << "]: "
+    //<< in_size_vec[i] << std::endl;
 
-  if(worker_id == 1)
-  {
-    for(unsigned int i = 0; i < in_size_vec.size(); ++i)
-      std::cout << "---size(" << i << "): " << in_size_vec[i] << std::endl;
+  //for(unsigned int i = 0; i <  foreign_hash_vec.size(); ++i)
+    //std::cout << "Worker " << worker_id << " fvec[" << i << "]: " 
+      //<< foreign_hash_vec[i] << std::endl;
 
-    for(unsigned int i = 0; i < support_points.size(); ++i)
-      std::cout << "p(" << i << "): " << support_points[i] << std::endl;
-
-    unsigned int point_counter = 0;
-    unsigned int c = 0;
-      Point<spacedim> temp;
-      while(point_counter < incoming_data.size() )
-      {
-        for(unsigned int k = 0; k < spacedim; ++k)
-        {
-          temp[k] = incoming_data[point_counter++]; 
-        }
-        std::cout << " *** P(" << c++ << "): " << temp << std::endl;
-      }
-  }
-
-  std::vector<bool> is_taken (target_dof_handler.n_dofs(), false);
-  send_size_indexed_by_foreign_worker.resize ( n_foreign_workers );
-  disp_indexed_by_foreign_worker.resize      ( n_foreign_workers );
-  target_dof_vec.resize( target_dof_handler.n_dofs() );
-
-
-  //From the point of view of a processor on a certain domain,
-  //he owns some cells on the boundary that have a corresponding
-  //neighboring cell owned by a different processor belonging
-  //to the other domain. Once we get the list of the degrees of 
-  //freedom owned by each foreign processor, we determine from
-  //which processor we expect to receive data. The list is ordered
-  //by the rank of each processor on the foreign group. Afterwards,
-  //we relate every dof that we own with a dof from the list of foreign
-  //processors. Since the dof numbering in one processor might be different
-  //to the numbering in the foreign processor, instead of sending 
-  //the dof numbering, we send the coordinates of the support points.
-  //This idea only works when the finite element space does indeed have
-  //the concept of support points. (This holds for the Lagrangian elements)
-  //The next step is to sort the support points so that both sender and
-  //receiver agree on the order of the degrees of freedom.
-  //
-
-  unsigned int point_counter = 0;
+  std::vector<bool> is_taken (n_local_dofs, false);
+  send_size_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
+  recv_size_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
+  send_disp_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
+  recv_disp_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
+  recv_dof_index_vec.resize                  ( n_local_dofs );
+  request_hash_vec.resize                    ( n_local_dofs );
+  
+  unsigned int hash_counter = 0;
   unsigned int dof_counter = 0;
-  Point<spacedim> temp;
 
   for(unsigned int i = 0; i < n_foreign_workers; ++i)
   {
-    std::vector<unsigned int> temp_dof_vec;
-    std::vector<P_point_dof> temp_pairs;
-    unsigned int n_points_rec_by_foreign_worker 
-      = in_size_vec[i] / spacedim;
+    unsigned int n_elements = 0;
 
-    for(unsigned int j = 0; j < n_points_rec_by_foreign_worker; ++j)
+    for(unsigned int j = 0; j < in_size_vec[i]; ++j)
     {
-      for(unsigned int k = 0; k < spacedim; ++k)
-      {
-        temp[k] = incoming_data[point_counter++]; 
-      }
-
-      if(worker_id == -1)
-      {
-        std::cout << "...I got point " 
-                  << temp << " from worker " 
-                  << foreign_ids[i] << std::endl;
-      }
-
-      auto it = target_point_to_dof.find(temp);
-      if( it != target_point_to_dof.end())
+      std::size_t hash = foreign_hash_vec[hash_counter++];
+      auto it = local_hash_map.find(hash);
+      if( it != local_hash_map.end())
       if(is_taken[it->second] == false)
       {
-        //P_point_dof pair (it->first, it->second);
-        temp_pairs.push_back(*it);
         is_taken[it->second] = true;
-        if(worker_id == -1)
-        {
-          std::cout << "AAA I accepted point " 
-                    << it->first << " from worker " 
-                    << foreign_ids[i] << std::endl;
-        }
+        request_hash_vec  [dof_counter] = it->first;
+        recv_dof_index_vec[dof_counter] = it->second;
+        ++dof_counter;
+        ++n_elements;
+        //std::cout << "I am worker " << worker_id 
+        //<< " and I am updating " << n_elements << std::endl;
       }
-    }//end_elements_of_i-th_process
+    }
 
-    //We sort the elements of the temp_pairs vector by coordinate
-    //using a lambda expression. Note that we pass by reference.
-    std::sort(temp_pairs.begin(), temp_pairs.end(), 
-          [&](const P_point_dof &left, const P_point_dof &right) 
-          { return Comparator()(left.first, right.first);});
+    recv_size_indexed_by_foreign_worker[i] = n_elements;
 
-    send_size_indexed_by_foreign_worker[i] = temp_pairs.size();
+    if(n_local_dofs == dof_counter)
+      break;
 
-    for(const auto &val : temp_pairs)
-      target_dof_vec[dof_counter++] = val.second;
   }//end_for_each_foreign_worker
 
-  disp_indexed_by_foreign_worker[0] = 0;
-  //Displacement vector
+  //Total size
+  n_elements_to_recv = 
+  std::accumulate(recv_size_indexed_by_foreign_worker.begin(),
+                  recv_size_indexed_by_foreign_worker.end(), 0);
+
+  //Displacement vector for receive
   for(unsigned int i = 1; i < n_foreign_workers; ++i)
-  {
-    unsigned int temp_disp = disp_indexed_by_foreign_worker[i-1] 
-                           + send_size_indexed_by_foreign_worker[i-1];
-    //if( send_size_indexed_by_foreign_worker[i] == 0 )
-      //temp_disp = disp_indexed_by_foreign_worker[i-1];
-    disp_indexed_by_foreign_worker[i] = temp_disp;
-  }
+    recv_disp_indexed_by_foreign_worker[i] = 
+        recv_disp_indexed_by_foreign_worker[i-1] 
+      + recv_size_indexed_by_foreign_worker[i-1];
 
-  //Test communication
-  std::vector<double> data (target_dof_handler.n_dofs());
-  std::transform (support_points.begin(), support_points.end(), 
-                  data.begin(), 
-                  [&](Point<spacedim> &p)->double {return this->point_to_double(p);});
- 
-  std::vector<double> data_to_send (data.size(),0);
-  std::vector<double> data_to_receive (data.size(),0);
-
-  for(unsigned int i = 0; i < target_dof_handler.n_dofs(); ++i)
-    data_to_send[i] = data[ target_dof_vec[i] ];
 
   for(unsigned int i = 0; i < n_foreign_workers; ++i)
   std::cout << "I am worker " << worker_id 
-            << " and I expect to send/receive " 
+            << " and I expect to receive " 
+            << recv_size_indexed_by_foreign_worker[i]
+            << " units from worker " 
+            << foreign_ids[i]
+            << " with disp " 
+            << recv_disp_indexed_by_foreign_worker[i]
+            <<  std::endl;
+
+  //Request information
+
+  //Get send size
+  MPI_Alltoall(&recv_size_indexed_by_foreign_worker[0], 1, MPI_INT, 
+               &send_size_indexed_by_foreign_worker[0], 1, MPI_INT, 
+               intercomm);
+
+  //Total size
+  n_elements_to_send = 
+  std::accumulate(send_size_indexed_by_foreign_worker.begin(),
+                  send_size_indexed_by_foreign_worker.end(), 0);
+
+  std::vector<std::size_t> hash_data_to_send ( n_elements_to_send );
+
+  //Displacement vector for send
+  for(unsigned int i = 1; i < n_foreign_workers; ++i)
+    send_disp_indexed_by_foreign_worker[i] = 
+        send_disp_indexed_by_foreign_worker[i-1] 
+      + send_size_indexed_by_foreign_worker[i-1];
+
+  //Receive the request from each worker
+  MPI_Alltoallv( &request_hash_vec[0], &recv_size_indexed_by_foreign_worker[0],
+                 &recv_disp_indexed_by_foreign_worker[0], MPI_UNSIGNED_LONG,
+                 &hash_data_to_send[0], &send_size_indexed_by_foreign_worker[0],
+                 &send_disp_indexed_by_foreign_worker[0], MPI_UNSIGNED_LONG, intercomm);
+
+  for(unsigned int i = 0; i < n_foreign_workers; ++i)
+  std::cout << "I am worker " << worker_id 
+            << " and I expect to send " 
             << send_size_indexed_by_foreign_worker[i]
             << " units to worker " 
             << foreign_ids[i]
             << " with disp " 
-            << disp_indexed_by_foreign_worker[i]
+            << send_disp_indexed_by_foreign_worker[i]
             <<  std::endl;
 
-  //std::cout << "I am worker " << worker_id 
-            //<< " and my data_to_send has length "
-            //<< data_to_send.size()
-            //<< " and my data_to_receive has length "
-            //<< data_to_receive.size()
-            //<<  std::endl;
+  //Populate the send vector of indices 
+  unsigned int counter = 0;
+  send_dof_index_vec.resize( n_elements_to_send );
+  for(const auto &hash : hash_data_to_send)
+  {
+    auto it = local_hash_map.find(hash);
+    send_dof_index_vec[counter++] = it->second;
+  }
 
-  //MPI_Alltoallv( &data_to_send[0], &send_size_indexed_by_foreign_worker[0],
-                 //&disp_indexed_by_foreign_worker[0], MPI_DOUBLE,
-                 //&data_to_receive[0], &send_size_indexed_by_foreign_worker[0],
-                 //&disp_indexed_by_foreign_worker[0], MPI_DOUBLE, intercomm);
+  send_dof_value_vec.resize (n_elements_to_send, 0);
+  recv_dof_value_vec.resize (n_elements_to_recv, 0);
+}//relate_foreign_dofs 
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::test_communication()
+{
+  std::vector<Point<spacedim> > support_points (target_dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim, spacedim>(), 
+                                       target_dof_handler, support_points);
+  std::vector<double> solution (target_dof_handler.n_dofs(), 0);
+  std::transform(support_points.begin(), support_points.end(), 
+                 solution.begin(),
+                 [&](Point<spacedim> &p)->double 
+                 { return this->point_to_double(p);});
 
-}//end_compare_target_centers
+  for(unsigned int i = 0; i < n_elements_to_send; ++i) 
+    send_dof_value_vec[i] = solution[send_dof_index_vec[i]];
+
+  std::vector<double> temp_recv_data (n_elements_to_recv, 0);
+
+  MPI_Alltoallv(&send_dof_value_vec[0], &send_size_indexed_by_foreign_worker[0],
+                &send_disp_indexed_by_foreign_worker[0], MPI_DOUBLE,
+                &temp_recv_data[0], &recv_size_indexed_by_foreign_worker[0],
+                &recv_disp_indexed_by_foreign_worker[0], MPI_DOUBLE,
+                intercomm);
+
+  for(unsigned int i = 0; i < n_elements_to_recv; ++i) 
+    recv_dof_value_vec[i] = temp_recv_data[recv_dof_index_vec[i]];
+
+  //for(unsigned int i = 0; i < n_elements_to_recv; ++i)
+  //if(solution[i] != recv_dof_value_vec[i] )
+  //{
+    //std::cout 
+      //<< "Worker" << worker_id << " says: "
+      //<< "What I have: " 
+      //<< solution[i] 
+      //<< " what I need: " 
+      //<< recv_dof_value_vec[i] << std::endl;
+  //}
+  
+  if(solution == recv_dof_value_vec)
+  {
+    std::cout << "Работник " << worker_id << " сказал очень хорошо" << std::endl;
+  }
+                 
+}
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
@@ -531,6 +558,9 @@ void ParallelMapLinker<dim, spacedim>::verify_domains_match()
   unsigned int counter = 0;
   for(const auto &val : local_hash_vec)
     local_hash_map[val] = counter++;
+
+  //if(local_hash_map.size() != target_dof_handler.n_dofs() )
+    //Assert(false, ExcInternalError());
   
 
   //Exchange size within SD group
@@ -563,7 +593,7 @@ void ParallelMapLinker<dim, spacedim>::verify_domains_match()
   int rec_size = -1;
   MPI_Status status;
 
-  //Excahnge size within leaders of each group
+  //Exchange size within leaders of each group
   MPI_Sendrecv(&size, 1, MPI_INT, 0, 111, 
                &rec_size, 1, MPI_INT, 0, 111, intercomm, &status);
 
@@ -586,8 +616,10 @@ void ParallelMapLinker<dim, spacedim>::verify_domains_match()
 template<int dim, int spacedim>
 double ParallelMapLinker<dim,spacedim>::zero_to_pi(const double &num)
 {
-  if(num == 0)
-    return numbers::PI;
+  //if(num == 1)
+    //return numbers::PI;
+  //else if (num == 0)
+    //return numbers::E;
   return num;
 }
 //--------------------------------------------

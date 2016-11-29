@@ -4,13 +4,20 @@
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/javier/dealii-8.3.0/examples/darcy_p
-gmake[4]: Warning: File `Makefile' has modification time 0.03 s in the future
-gmake[5]: Warning: File `CMakeFiles/Makefile2' has modification time 0.025 s in the future
 [  7%] Building CXX object CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In member function ‘void dealii::ParallelMapLinker<dim, spacedim>::verify_domains_match()’:
-/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:563:6: error: ‘full_has_vec’ was not declared in this scope
-   if(full_has_vec == foreign_hash_vec)
-      ^
+In file included from /home/javier/petsc-3.4.5/include/petscsys.h:1506:0,
+                 from /home/javier/petsc-3.4.5/include/petscbag.h:4,
+                 from /home/javier/petsc-3.4.5/include/petsc.h:5,
+                 from /home/javier/dealii-8.3.0/include/deal.II/fe/fe_values.h:46,
+                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.h:10,
+                 from /home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:1:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc: In member function ‘void dealii::ParallelMapLinker<dim, spacedim>::test_communication()’:
+/home/javier/dealii-8.3.0/examples/darcy_p/parallel_map_linker.cc:504:18: error: ‘recv_dof_value_vec’ was not declared in this scope
+                 &recv_dof_value_vec[0], &recv_size_indexed_by_foreign_worker[0],
+                  ^
+/home/javier/petsc-3.4.5/include/petsclog.h:370:143: note: in definition of macro ‘MPI_Alltoallv’
+  ((petsc_allreduce_ct++,0) || PetscMPITypeSizeComm(comm,&petsc_send_len,sendcnts,sendtype) || MPI_Alltoallv(sendbuf,sendcnts,sdispls,sendtype,recvbuf,recvcnts,rdispls,recvtype,comm))
+                                                                                                                                               ^
 gmake[6]: *** [CMakeFiles/sdd_simple_parallel.dir/parallel_map_linker.cc.o] Error 1
 gmake[5]: *** [CMakeFiles/sdd_simple_parallel.dir/all] Error 2
 gmake[4]: *** [all] Error 2
