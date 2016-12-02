@@ -17447,6 +17447,8 @@ deal.II/dofs/dof_tools.h
 -
 deal.II/fe/fe_values.h
 -
+deal.II/fe/fe_dgq.h
+-
 deal.II/numerics/data_out.h
 -
 deal.II/base/utilities.h
@@ -17464,8 +17466,6 @@ deal.II/fe/mapping_q1.h
 deal.II/fe/component_mask.h
 -
 deal.II/fe/fe_q.h
--
-deal.II/fe/fe_dgq.h
 -
 deal.II/fe/fe_values.h
 -

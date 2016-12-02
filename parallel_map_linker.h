@@ -6,7 +6,6 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/fe/component_mask.h>
 #include <deal.II/fe/fe_q.h>
-#include <deal.II/fe/fe_dgq.h>
 #include <deal.II/fe/fe_values.h>
 //---------------------------
 DEAL_II_NAMESPACE_OPEN
@@ -102,7 +101,8 @@ class ParallelMapLinker
     double point_to_double(const Point<spacedim> &p);
     std::size_t point_hasher(const Point<spacedim> &p);
     double zero_to_pi(const double &num);
-    void verify_domains_match();
+    void check_for_collisions();
+    void compare_coordinates();
     void relate_foreign_dofs();
     void test_communication();
 

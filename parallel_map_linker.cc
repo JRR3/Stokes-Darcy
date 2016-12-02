@@ -7,6 +7,7 @@
 #include <deal.II/grid/grid_tools.h>
 #include <deal.II/dofs/dof_tools.h>
 #include <deal.II/fe/fe_values.h>
+#include <deal.II/fe/fe_dgq.h>
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/base/utilities.h>
 #include <deal.II/grid/grid_out.h>
@@ -37,9 +38,11 @@ void ParallelMapLinker<dim, spacedim>::reinit(
   create_local_mesh();
   setup_dofs();
   build_source_target_map();
-  verify_domains_match();
+  check_for_collisions();
+  compare_coordinates();
   relate_foreign_dofs();
   test_communication();
+  plot_triangulation();
 }
 //---------------------------
 template<int dim, int spacedim>
@@ -68,7 +71,7 @@ void ParallelMapLinker<dim, spacedim>::split_communication()
   int size,rank;
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_rank(MPI_COMM_WORLD, &size);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   worker_id = rank;
   n_workers = size;
@@ -381,7 +384,7 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
     //std::cout << "Worker " << worker_id << " fvec[" << i << "]: " 
       //<< foreign_hash_vec[i] << std::endl;
 
-  std::vector<bool> is_taken (n_local_dofs, false);
+  std::vector<bool> is_taken                 ( n_local_dofs, false);
   send_size_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
   recv_size_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
   send_disp_indexed_by_foreign_worker.resize ( n_foreign_workers, 0 );
@@ -413,17 +416,25 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
       }
     }
 
+
     recv_size_indexed_by_foreign_worker[i] = n_elements;
 
-    if(n_local_dofs == dof_counter)
-      break;
+    //CHECK
+    //if(n_local_dofs == dof_counter)
+      //break;
 
   }//end_for_each_foreign_worker
+
+  //std::cout << "Worker " << worker_id << " says dof_counter " << dof_counter << std::endl;
 
   //Total size
   n_elements_to_recv = 
   std::accumulate(recv_size_indexed_by_foreign_worker.begin(),
                   recv_size_indexed_by_foreign_worker.end(), 0);
+
+  //std::cout << "Worker " << worker_id 
+            //<< " expects to receive " 
+            //<< n_elements_to_recv << " elements" << std::endl;
 
   //Displacement vector for receive
   for(unsigned int i = 1; i < n_foreign_workers; ++i)
@@ -431,16 +442,15 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
         recv_disp_indexed_by_foreign_worker[i-1] 
       + recv_size_indexed_by_foreign_worker[i-1];
 
-
-  for(unsigned int i = 0; i < n_foreign_workers; ++i)
-  std::cout << "I am worker " << worker_id 
-            << " and I expect to receive " 
-            << recv_size_indexed_by_foreign_worker[i]
-            << " units from worker " 
-            << foreign_ids[i]
-            << " with disp " 
-            << recv_disp_indexed_by_foreign_worker[i]
-            <<  std::endl;
+  //for(unsigned int i = 0; i < n_foreign_workers; ++i)
+  //std::cout << "I am worker " << worker_id 
+            //<< " and I expect to receive " 
+            //<< recv_size_indexed_by_foreign_worker[i]
+            //<< " units from worker " 
+            //<< foreign_ids[i]
+            //<< " with disp " 
+            //<< recv_disp_indexed_by_foreign_worker[i]
+            //<<  std::endl;
 
   //Request information
 
@@ -468,15 +478,15 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
                  &hash_data_to_send[0], &send_size_indexed_by_foreign_worker[0],
                  &send_disp_indexed_by_foreign_worker[0], MPI_UNSIGNED_LONG, intercomm);
 
-  for(unsigned int i = 0; i < n_foreign_workers; ++i)
-  std::cout << "I am worker " << worker_id 
-            << " and I expect to send " 
-            << send_size_indexed_by_foreign_worker[i]
-            << " units to worker " 
-            << foreign_ids[i]
-            << " with disp " 
-            << send_disp_indexed_by_foreign_worker[i]
-            <<  std::endl;
+  //for(unsigned int i = 0; i < n_foreign_workers; ++i)
+  //std::cout << "I am worker " << worker_id 
+            //<< " and I expect to send " 
+            //<< send_size_indexed_by_foreign_worker[i]
+            //<< " units to worker " 
+            //<< foreign_ids[i]
+            //<< " with disp " 
+            //<< send_disp_indexed_by_foreign_worker[i]
+            //<<  std::endl;
 
   //Populate the send vector of indices 
   unsigned int counter = 0;
@@ -484,6 +494,12 @@ void ParallelMapLinker<dim, spacedim>::relate_foreign_dofs ()
   for(const auto &hash : hash_data_to_send)
   {
     auto it = local_hash_map.find(hash);
+    //if(it == local_hash_map.end())
+    //{
+      //std::cout << "Worker " << worker_id 
+                //<< " says this should not happen" << std::endl;
+      //Assert(false, ExcInternalError());
+    //}
     send_dof_index_vec[counter++] = it->second;
   }
 
@@ -516,19 +532,8 @@ void ParallelMapLinker<dim, spacedim>::test_communication()
                 intercomm);
 
   for(unsigned int i = 0; i < n_elements_to_recv; ++i) 
-    recv_dof_value_vec[i] = temp_recv_data[recv_dof_index_vec[i]];
+    recv_dof_value_vec[recv_dof_index_vec[i]] = temp_recv_data[i];
 
-  //for(unsigned int i = 0; i < n_elements_to_recv; ++i)
-  //if(solution[i] != recv_dof_value_vec[i] )
-  //{
-    //std::cout 
-      //<< "Worker" << worker_id << " says: "
-      //<< "What I have: " 
-      //<< solution[i] 
-      //<< " what I need: " 
-      //<< recv_dof_value_vec[i] << std::endl;
-  //}
-  
   if(solution == recv_dof_value_vec)
   {
     std::cout << "Работник " << worker_id << " сказал очень хорошо" << std::endl;
@@ -538,10 +543,13 @@ void ParallelMapLinker<dim, spacedim>::test_communication()
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
-void ParallelMapLinker<dim, spacedim>::verify_domains_match()
+void ParallelMapLinker<dim, spacedim>::check_for_collisions()
 {
   if(owns_cells_on_the_interface == false)
     return;
+
+  if(worker_id == 0)
+    std::cout << "Checking for collisions" << std::endl;
 
   std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
   DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
@@ -599,9 +607,11 @@ void ParallelMapLinker<dim, spacedim>::verify_domains_match()
 
   std::vector<std::size_t> foreign_hash_vec (rec_size);
 
-  //Excahnge full hash within leaders of each group
+  //Exchange full hash within leaders of each group
   MPI_Sendrecv(&full_hash_vec[0], full_hash_vec.size(), MPI_UNSIGNED_LONG, 0, 111, 
                &foreign_hash_vec[0], rec_size, MPI_UNSIGNED_LONG, 0, 111, intercomm, &status);
+
+  //std::cout << "The size of full_hash_vec is: " << full_hash_vec.size() << std::endl;
 
   if(full_hash_vec != foreign_hash_vec)
   {
@@ -610,7 +620,122 @@ void ParallelMapLinker<dim, spacedim>::verify_domains_match()
   }
   //for(unsigned int i = 0; i < full_hash_vec.size(); ++i)
     //std::cout << "Worker " << worker_id << " will received " << rec_size << std::endl;
-}
+}//end_check_for_collisions
+//--------------------------------------------
+//--------------------------------------------
+template<int dim, int spacedim>
+void ParallelMapLinker<dim, spacedim>::compare_coordinates()
+{
+  if(owns_cells_on_the_interface == false)
+    return;
+
+  if(worker_id == 0)
+    std::cout << "Comparing coordinates between processors" << std::endl;
+
+  std::vector<Point<spacedim> > support_points ( target_dof_handler.n_dofs() );
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim,spacedim>(), 
+                                       target_dof_handler, 
+                                       support_points);
+
+  //Convert vector of points to vector of doubles
+  std::vector<double> expanded_vector ( support_points.size() * spacedim );
+
+  unsigned int counter = 0;
+  for(unsigned int i = 0; i < support_points.size(); ++i)
+  for(unsigned int j = 0; j < spacedim; ++j)
+    expanded_vector[counter++]  = support_points[i][j];
+
+
+  //Send size with to the leader of each group
+  int size = expanded_vector.size();
+  std::vector<int> in_size_vec (n_sd_workers);
+  MPI_Gather(&size, 1, MPI_INT, &in_size_vec[0], 1, MPI_INT, 0, sd_comm);
+
+  //Build disp
+  std::vector<int> disp (n_sd_workers,0);
+  for(unsigned int i = 1; i < disp.size(); ++i)
+    disp[i] = disp[i-1] + in_size_vec[i-1];
+
+  //Send support points to the leader of each group
+  unsigned int total_size = std::accumulate(in_size_vec.begin(), in_size_vec.end(), 0);
+  std::vector<double> full_expanded_point_vector (total_size);
+
+  MPI_Gatherv(&expanded_vector[0], expanded_vector.size(), MPI_DOUBLE, 
+              &full_expanded_point_vector[0], &in_size_vec[0], &disp[0], MPI_DOUBLE, 0, sd_comm);
+
+
+  if(sd_worker_id != 0)
+    return;
+
+  //Regenerate points
+  unsigned int n_points = total_size / spacedim;
+  std::vector<Point<spacedim> > full_point_vector (n_points);
+  counter = 0;
+  for(unsigned int i = 0; i < n_points; ++i)
+  for(unsigned int j = 0; j < spacedim; ++j)
+    full_point_vector[i][j] = full_expanded_point_vector[counter++];
+
+  //std::cout << ">>> Worker " << worker_id 
+            //<< " says full_point_vector size is: " 
+            //<< full_point_vector.size() << std::endl;
+
+  //Remove repetitions
+  std::sort(full_point_vector.begin(), full_point_vector.end(), Comparator());
+  auto last = std::unique(full_point_vector.begin(), full_point_vector.end());
+  full_point_vector.erase(last, full_point_vector.end());
+
+  //std::cout << "<<< Worker " << worker_id 
+            //<< " says full_point_vector size is: " 
+            //<< full_point_vector.size() << std::endl;
+
+  //Again expand vector of points into vector of doubles
+  expanded_vector.resize( full_point_vector.size() * spacedim );
+
+  counter = 0;
+  for(unsigned int i = 0; i < full_point_vector.size(); ++i)
+  for(unsigned int j = 0; j < spacedim; ++j)
+    expanded_vector[counter++]  = full_point_vector[i][j];
+
+  size = expanded_vector.size();
+
+  int rec_size = -1;
+  MPI_Status status;
+
+  //Send size to each leader
+  MPI_Sendrecv(&size, 1, MPI_INT, 0, 111, 
+               &rec_size, 1, MPI_INT, 0, 111, intercomm, &status);
+
+  std::vector<double> foreign_expanded_vector (rec_size);
+
+  //Send expanded vector between leaders
+  MPI_Sendrecv(&expanded_vector[0], expanded_vector.size(), MPI_DOUBLE, 0, 111, 
+               &foreign_expanded_vector[0], rec_size, MPI_DOUBLE, 0, 111, intercomm, &status);
+
+
+  //Again regenerate points
+  n_points = rec_size / spacedim;
+  //std::cout << ">>> Worker " << worker_id 
+            //<< " says # of recv points is: " 
+            //<< n_points << std::endl;
+
+  std::vector<Point<spacedim> > foreign_full_point_vector (n_points);
+  counter = 0;
+  for(unsigned int i = 0; i < n_points; ++i)
+  for(unsigned int j = 0; j < spacedim; ++j)
+    foreign_full_point_vector [i][j] = foreign_expanded_vector[counter++];
+
+    //std::cout << "Worker " << worker_id << " says that "
+              //<< "there are " << foreign_full_point_vector.size() 
+              //<< " unique support points" << std::endl;
+
+  if(sd_worker_id == 0)
+  if(full_point_vector != foreign_full_point_vector )
+  {
+    std::cout << "Worker " << worker_id << " says that the vectors are not equal" << std::endl;
+    Assert (false, ExcNotImplemented());
+  }
+
+}//end_check_for_collisions
 //--------------------------------------------
 //--------------------------------------------
 template<int dim, int spacedim>
@@ -643,28 +768,76 @@ void ParallelMapLinker<dim, spacedim>::plot_triangulation()
   if(owns_cells_on_the_interface == false)
     return;
 
-  GridOut plotter;
+  //Plot worker id of each cell
+  FE_DGQ<dim, spacedim> pwc_fe (0);
+  DoFHandler<dim,spacedim> pwc_dh (triangulation);
+  pwc_dh.distribute_dofs( pwc_fe);
+  Vector<double> pwc_solution (pwc_dh.n_dofs());
+  pwc_solution = worker_id;
+
+
+  //Plot hash of each coordinate on each domain
+  std::vector<Point<spacedim> > support_points (target_dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(MappingQ1<dim, spacedim>(), 
+                                       target_dof_handler, support_points);
+  std::vector<std::size_t> hash_vec (target_dof_handler.n_dofs(), 0);
+  std::transform(support_points.begin(), support_points.end(), 
+                 hash_vec.begin(),
+                 [&](Point<spacedim> &p)->std::size_t 
+                 { return this->point_hasher(p);});
+
+  for(unsigned int i = 0; i < hash_vec.size(); ++i)
+    solution_vector(i) = hash_vec[i];
+
+  //Translate the Darcy mesh in the direction <1,0,0>
+  //Point<spacedim> p;
+  //p[0] = 1.05;
+  //if(domain_type == Darcy && spacedim==3)
+    //GridTools::shift(p, triangulation);
+
+  DataOut<dim,DoFHandler<dim,spacedim> > data_out;
+  data_out.attach_dof_handler (pwc_dh);
+  data_out.add_data_vector (pwc_solution, "worker_id", 
+      DataOut<dim,DoFHandler<dim,spacedim> >::type_dof_data );
+  data_out.add_data_vector (target_dof_handler, solution_vector, "hash"); 
+
+  data_out.build_patches ();
+
   unsigned int out_index = 0;
   const std::string filename = ("grid-" +
                                 Utilities::int_to_string (out_index, 2) +
                                 "." +
-                                Utilities::int_to_string
-                                (worker_id, 2) +
+                                Utilities::int_to_string (worker_id, 2) +
                                 ".vtu");
   std::ofstream output (filename.c_str());
-  //plotter.write_vtu(lambda_triangulation, output);
+  data_out.write_vtu (output);
 
   if(worker_id != 0)
     return;
 
-  //std::vector<std::string> filenames;
-  //for(unsigned int i = 0; i < n_workers; ++i)
-  //filenames.push_back (std::string("grid-") +
-                       //Utilities::int_to_string (out_index, 2) +
-                       //"." +
-                       //Utilities::int_to_string(i, 2) +
-                       //".vtu");
+  std::vector<std::string> filenames;
+  for(unsigned int i = 0; i < n_workers; ++i)
+  filenames.push_back (std::string("grid-") +
+                       Utilities::int_to_string (out_index, 2) +
+                       "." +
+                       Utilities::int_to_string(i, 2) +
+                       ".vtu");
+  const std::string
+  pvtu_master_filename = ("grid-" +
+                          Utilities::int_to_string (out_index, 2) +
+                          ".pvtu");
 
+
+  std::ofstream pvtu_master (pvtu_master_filename.c_str());
+  data_out.write_pvtu_record (pvtu_master, filenames);
+
+  //const std::string
+  //visit_master_filename = ("grid-" +
+                           //Utilities::int_to_string (out_index, 2) +
+                           //".visit");
+
+  //std::ofstream visit_master (visit_master_filename.c_str());
+  //data_out.write_visit_record (visit_master, filenames);
 }
 //--------------------------------------------
 //--------------------------------------------
